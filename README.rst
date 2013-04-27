@@ -7,6 +7,23 @@ more flexible use of the exteral content beyond the one-trick pony of the
 standard "<iframe>" copy-paste embed code.
 
 
+Installation & Configuration
+----------------------------
+1. ``pip install armstrong.apps.embeds``
+
+2. Add ``armstrong.apps.embeds`` to your ``INSTALLED_APPS``
+
+3. Run either ``syncdb`` or ``migrate`` if you are using `South`_
+
+The last step is to manually load the provided Backends into your database.
+(This is not provided as initial fixture data so that you may edit them
+without worrying that ``syncdb`` will restore the initial versions.)
+
+4. ``manage.py loaddata embed_backends.json``
+
+.. _South: http://south.aeracode.org/
+
+
 Contributing
 ------------
 * Create something awesome -- make the code better, add some functionality,

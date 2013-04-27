@@ -1,0 +1,13 @@
+[
+  {
+    "pk": 1,
+    "model": "embeds.backend",
+    "fields": {
+      "regex": ".*",
+      "priority": 0,
+      "description": "The bare minimum backend that essentially just reports back the URL",
+      "name": "default",
+      "slug": "default"
+    }
+  }
+]
