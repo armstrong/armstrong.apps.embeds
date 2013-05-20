@@ -9,5 +9,16 @@
       "name": "default",
       "slug": "default"
     }
+  },
+  {
+    "pk": 2,
+    "model": "embeds.backend",
+    "fields": {
+      "regex": ".*",
+      "priority": 1,
+      "description": "Embedly API wrapper that works with free or paid accounts. Requires an API key.",
+      "name": "Embedly",
+      "slug": "embedly"
+    }
   }
 ]
