@@ -6,12 +6,12 @@ class Response(object):
     _provider_field = 'provider_name'
 
     def __init__(self, data=None, fresh=False):
-        self.data = data or {}
-        self.fresh = bool(fresh)  # True = new response data from the Backend
+        self._data = data or {}
+        self._fresh = bool(fresh)  # True = new response data from the Backend
 
     def __eq__(self, other):
         try:
-            return self.data == other.data
+            return self._data == other._data
         except AttributeError:
             return False
 
@@ -22,13 +22,13 @@ class Response(object):
         raise NotImplementedError()
 
     def is_fresh(self):
-        return self.fresh
+        return self._fresh
 
     @property
     def type(self):
         if not hasattr(self, '_type'):
             self._type = None
-            name = self.data.get(self._type_field)
+            name = self._data.get(self._type_field)
             if name:
                 self._type, _ = Type.objects.get_or_create(name=name)
         return self._type
@@ -37,7 +37,7 @@ class Response(object):
     def provider(self):
         if not hasattr(self, '_provider'):
             self._provider = None
-            name = self.data.get(self._provider_field)
+            name = self._data.get(self._provider_field)
             if name:
                 self._provider, _ = Provider.objects.get_or_create(name=name)
         return self._provider
@@ -48,7 +48,7 @@ class Response(object):
     # though `data` is available, the goal is to avoid accessing it
     #
     def _get(self, attr):
-        return self.data.get(attr, '')
+        return self._data.get(attr, '')
 
     title = property(lambda self: self._get('title'))
     author_name = property(lambda self: self._get('author_name'))

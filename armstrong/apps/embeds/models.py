@@ -117,9 +117,9 @@ class Embed(models.Model):
             if response.is_fresh():  # fresh data, so set the metadata
                 self.type = response.type
                 self.provider = response.provider
-                self.response_cache = response.data
+                self.response_cache = response._data
             return
-        raise InvalidResponseError(response.data)
+        raise InvalidResponseError(response._data)
 
     @response.deleter
     def response(self):

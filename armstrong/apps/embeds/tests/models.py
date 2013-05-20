@@ -43,13 +43,13 @@ class BackendModelTestCase(DjangoTestCase):
         b = Backend(slug='default')
         wrapped = b.wrap_response_data(self.data)
         self.assertTrue(isinstance(wrapped, self.response_cls))
-        self.assertDictEqual(wrapped.data, self.data)
+        self.assertDictEqual(wrapped._data, self.data)
 
     def test_wrapped_response_equals_original_response(self):
         b = Backend(slug='default')
         response = b.call(self.url)
-        wrapped = b.wrap_response_data(response.data)
-        self.assertDictEqual(response.data, wrapped.data)
+        wrapped = b.wrap_response_data(response._data)
+        self.assertDictEqual(response._data, wrapped._data)
 
 
 class EmbedTestCase(DjangoTestCase):
@@ -169,11 +169,11 @@ class EmbedTestCase(DjangoTestCase):
         self.assertNotEqual(e.response_cache, {})
         self.assertIs(e.type, self.response.type)
         self.assertIs(e.provider, self.response.provider)
-        self.assertDictEqual(e.response_cache, self.response.data)
+        self.assertDictEqual(e.response_cache, self.response._data)
 
     def test_un_fresh_response_doesnt_set_properties(self):
         e = Embed()
-        self.response.fresh = False
+        self.response._fresh = False
         e.response = self.response
         self.assertIsNone(e.type)
         self.assertIsNone(e.provider)
@@ -185,7 +185,7 @@ class EmbedTestCase(DjangoTestCase):
         d = {'key': 'value'}
 
         e = Embed(url=self.url, type=t, provider=p, response_cache=d)
-        self.response.fresh = False
+        self.response._fresh = False
         e.response = self.response
 
         self.assertIs(e.type, t)
@@ -202,7 +202,7 @@ class EmbedTestCase(DjangoTestCase):
         e = Embed(response_cache=data, backend=backend)
 
         self.assertDictEqual(e.response_cache, data)
-        self.assertDictEqual(e.response.data, data)
+        self.assertDictEqual(e.response._data, data)
         self.assertEqual(e.response, self.response_cls(data))
 
     def test_wrapped_response_doesnt_update(self):

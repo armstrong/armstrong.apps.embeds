@@ -88,7 +88,7 @@ class ResponseTestCase(DjangoTestCase):
 
     def test_missing_data_attr_raises_error(self):
         with self.assertRaises(KeyError):
-            Response().data['fake']
+            Response()._data['fake']
 
     def test_data_getter_returns_empty_on_missing_attr(self):
         r = Response()

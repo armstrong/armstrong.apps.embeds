@@ -43,8 +43,8 @@ class CommonBackendTestCaseMixin(object):
 
     def test_wrapped_response_equals_original_response(self):
         response = self.backend.call(self.url)
-        wrapped = self.backend.wrap_response_data(response.data)
-        self.assertDictEqual(response.data, wrapped.data)
+        wrapped = self.backend.wrap_response_data(response._data)
+        self.assertDictEqual(response._data, wrapped._data)
 
 
 class LoadDefaultBackendTestCase(DjangoTestCase):
@@ -64,7 +64,7 @@ class DefaultBackendTestCase(CommonBackendTestCaseMixin, DjangoTestCase):
 
     def test_backend_response_returns_same_url(self):
         response = self.backend.call(self.url)
-        self.assertDictEqual(response.data, self.data)
+        self.assertDictEqual(response._data, self.data)
 
     def test_backend_response_returns_empty_data_for_attr(self):
         response = self.backend.call(self.url)
