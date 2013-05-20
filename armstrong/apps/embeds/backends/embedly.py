@@ -1,8 +1,8 @@
 from __future__ import absolute_import
-import logging
 from django.conf import settings
 from embedly import Embedly as EmbedlyAPI
 
+from .. import logger
 from . import proxy
 from .base_response import Response
 
@@ -14,7 +14,7 @@ class EmbedlyResponse(Response):
             self._data.get('error') or
             self._data.get('type', '') == 'error')
         if is_error:
-            logging.warn("%s error: %s" % (type(self).__name__, self._data))
+            logger.warn("%s error: %s" % (type(self).__name__, self._data))
         return not is_error
 
     #
@@ -65,7 +65,7 @@ class EmbedlyBackend(object):
 
     @proxy
     def call(self, url):
-        logging.debug("Embedly call to oembed('%s')" % url)
+        logger.debug("Embedly call to oembed('%s')" % url)
         response = self.client.oembed(url)
         return self.wrap_response_data(getattr(response, 'data', None), fresh=True)
 
