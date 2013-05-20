@@ -78,3 +78,21 @@ class EmbedForeignKey(SetResponseFieldMixin, models.ForeignKey):
     def contribute_to_class(self, cls, name):
         super(EmbedForeignKey, self).contribute_to_class(cls, name)
         setattr(cls, name, self.descriptor_class(self, response_field=self.response_field))
+
+
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([
+    (
+        [EmbedURLField, EmbedForeignKey],
+        [],
+        dict(response_field=("response_field", {}))
+    ),
+    (
+        [EmbedURLField],
+        [],
+        dict(assign_func=("assign_func", {}))
+    )
+], [
+    "^armstrong\.apps\.embeds\.fields\.EmbedURLField",
+    "^armstrong\.apps\.embeds\.fields\.EmbedForeignKey"
+])
