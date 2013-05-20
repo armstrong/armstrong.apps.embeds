@@ -62,7 +62,7 @@ class ResponseTestCase(DjangoTestCase):
 
     def test_creates_type_from_custom_type_field(self):
         class CustomResponse(Response):
-            type_field = "custom"
+            _type_field = "custom"
 
         r = CustomResponse({'custom': 'TestType'})
         self.assertTrue(isinstance(r.type, Type))
@@ -71,7 +71,7 @@ class ResponseTestCase(DjangoTestCase):
 
     def test_creates_provider_from_custom_provider_field(self):
         class CustomResponse(Response):
-            provider_field = "custom"
+            _provider_field = "custom"
 
         r = CustomResponse({'custom': 'TestProvider'})
         self.assertTrue(isinstance(r.provider, Provider))

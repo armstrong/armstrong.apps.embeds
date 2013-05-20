@@ -2,8 +2,8 @@ from ..models import Type, Provider
 
 
 class Response(object):
-    type_field = 'type'
-    provider_field = 'provider_name'
+    _type_field = 'type'
+    _provider_field = 'provider_name'
 
     def __init__(self, data=None, fresh=False):
         self.data = data or {}
@@ -28,7 +28,7 @@ class Response(object):
     def type(self):
         if not hasattr(self, '_type'):
             self._type = None
-            name = self.data.get(self.type_field)
+            name = self.data.get(self._type_field)
             if name:
                 self._type, _ = Type.objects.get_or_create(name=name)
         return self._type
@@ -37,7 +37,7 @@ class Response(object):
     def provider(self):
         if not hasattr(self, '_provider'):
             self._provider = None
-            name = self.data.get(self.provider_field)
+            name = self.data.get(self._provider_field)
             if name:
                 self._provider, _ = Provider.objects.get_or_create(name=name)
         return self._provider
