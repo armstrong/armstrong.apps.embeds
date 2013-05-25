@@ -104,22 +104,26 @@ class Embed(models.Model):
 
     @response.setter
     def response(self, response):
-        """Build out this Embed from a successful Response object"""
+        """
+        Build out this Embed from a Response object
+        If the Response is valid and fresh, populate the object metadata.
+        The fresh determination is mainly used when reconstructing this
+        from the database where we need to rebuild the Response object
+        but there is no need to re-write the metadata.
 
+        """
         from .backends.base_response import Response
-
         if not isinstance(response, Response):
             raise InvalidResponseError("not a Response object")
 
-        if response.is_valid():
-            self._response = response  # wrapped Response object
+        if self.response == response:
+            return  # ignore attempts to set the same response
 
-            if response.is_fresh():  # fresh data, so set the metadata
-                self.type = response.type
-                self.provider = response.provider
-                self.response_cache = response._data
-            return
-        raise InvalidResponseError(response._data)
+        self._response = response  # wrapped Response object
+        if response.is_valid() and response.is_fresh():
+            self.type = response.type
+            self.provider = response.provider
+            self.response_cache = response._data
 
     @response.deleter
     def response(self):
@@ -130,15 +134,18 @@ class Embed(models.Model):
         self.provider = None
         self.response_cache = None
 
+    def get_response(self):
+        """Retrieve a new response from the Backend"""
+        return self.backend.call(self.url)
+
     def update_response(self):
         """
-        Retrieve a new response from the Backend and update if
-        the new response is different from what we already have.
+        Get a fresh response from the Backend and update
+        if it's valid and different from what we already have.
 
         """
-        new_response = self.backend.call(self.url)  # Backend call
-
-        if new_response != self.response:
+        new_response = self.get_response()
+        if new_response and new_response.is_valid() and new_response != self.response:
             self.response = new_response
             return True
         return False

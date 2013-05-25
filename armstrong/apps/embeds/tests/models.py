@@ -7,7 +7,6 @@ import fudge
 from armstrong.apps.embeds.models import Embed, Backend, Type, Provider
 from armstrong.apps.embeds.backends import InvalidResponseError
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
-from armstrong.apps.embeds.backends.base_response import Response
 
 
 def fake_backend_init(obj, *args, **kwargs):
@@ -150,24 +149,41 @@ class EmbedModelTestCase(DjangoTestCase):
         with self.assertRaises(InvalidResponseError):
             e.response = "this should break"
 
-    def test_invalid_response_raises_error(self):
-        class CustomResponse(Response):
+    def test_response_can_be_invalid(self):
+        class CustomResponse(self.response_cls):
             def is_valid(self):
                 return False
 
         e = Embed()
-        with self.assertRaises(InvalidResponseError):
-            e.response = CustomResponse()
+        e.response = CustomResponse()
+        self.assertTrue(isinstance(e.response, CustomResponse))
 
-    def test_valid_response_is_assigned(self):
-        class CustomResponse(Response):
-            def is_valid(self):
-                return True
-
+    def test_wont_assign_duplicate_response(self):
         e = Embed()
-        r = CustomResponse()
-        e.response = r
-        self.assertIs(e.response, r)
+        r1 = self.response_cls(dict(a=1))
+        r2 = self.backend.wrap_response_data(dict(a=1))
+        e.response = r1
+        self.assertEqual(id(r1), id(e.response))
+        e.response = r2
+        self.assertEqual(id(r1), id(e.response))
+
+    def test_get_response_requires_backend(self):
+        with self.assertRaises(Backend.DoesNotExist):
+            Embed().get_response()
+
+    def test_get_response_without_url_returns_none(self):
+        e = Embed(backend=self.backend)
+        self.assertIsNone(e.get_response())
+
+    def test_get_response_returns_correct_response(self):
+        e = Embed(url=self.url, backend=self.backend)
+        response = e.get_response()
+        self.assertTrue(isinstance(response, self.response_cls))
+        self.assertEqual(response._data['url'], self.url)
+
+    def test_get_response_returns_same_as_direct_call(self):
+        e = Embed(url=self.url, backend=self.backend)
+        self.assertEqual(e.get_response(), self.backend.call(self.url))
 
     def test_fresh_response_sets_properties(self):
         e = Embed()
@@ -200,6 +216,39 @@ class EmbedModelTestCase(DjangoTestCase):
         self.assertIs(e.provider, p)
         self.assertEqual(e.response_cache, d)
 
+    def test_invalid_response_doesnt_set_properties(self):
+        class CustomResponse(self.response_cls):
+            def is_valid(self):
+                return False
+
+        self.response.__class__ = CustomResponse
+        self.assertFalse(self.response.is_valid())
+
+        e = Embed()
+        e.response = self.response
+        self.assertIsNone(e.type)
+        self.assertIsNone(e.provider)
+        self.assertEqual(e.response_cache, {})
+
+    def test_invalid_response_doesnt_alter_properties(self):
+        class CustomResponse(self.response_cls):
+            def is_valid(self):
+                return False
+
+        self.response.__class__ = CustomResponse
+        self.assertFalse(self.response.is_valid())
+
+        t = Type.objects.create(name='different')
+        p = Provider.objects.create(name='different')
+        d = {'key': 'value'}
+
+        e = Embed(url=self.url, backend=self.backend, type=t, provider=p, response_cache=d)
+        e.response = self.response
+
+        self.assertIs(e.type, t)
+        self.assertIs(e.provider, p)
+        self.assertEqual(e.response_cache, d)
+
     def test_response_cache_requires_backend(self):
         with self.assertRaises(Backend.DoesNotExist):
             Embed(response_cache=dict(a=2))
@@ -221,8 +270,12 @@ class EmbedModelTestCase(DjangoTestCase):
         with self.assertRaises(Backend.DoesNotExist):
             Embed().update_response()
 
-    def test_empty_response_updates(self):
-        e = Embed(url=self.url)
+    def test_update_is_false_without_url(self):
+        e = Embed(backend=self.backend)
+        self.assertFalse(e.update_response())
+
+    def test_new_response_updates(self):
+        e = Embed(url=self.url, backend=self.backend)
         self.assertTrue(e.update_response())
 
     def test_same_response_doesnt_update(self):
@@ -231,7 +284,7 @@ class EmbedModelTestCase(DjangoTestCase):
         self.assertFalse(e.update_response())
 
     def test_duplicate_update_doesnt_update(self):
-        e = Embed(url=self.url)
+        e = Embed(url=self.url, backend=self.backend)
         e.update_response()
         self.assertFalse(e.update_response())
 
