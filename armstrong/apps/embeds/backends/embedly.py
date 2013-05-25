@@ -9,13 +9,10 @@ from .base_response import Response
 
 class EmbedlyResponse(Response):
     def is_valid(self):
-        is_error = (
+        return not (
             not self._data or
             self._data.get('error') or
             self._data.get('type', '') == 'error')
-        if is_error:
-            logger.warn("%s error: %s" % (type(self).__name__, self._data))
-        return not is_error
 
     #
     # Data attribute interface
@@ -71,6 +68,10 @@ class EmbedlyBackend(object):
         logger.debug("Embedly call to oembed('%s')" % url)
         response = self.client.oembed(url)
         return self.wrap_response_data(getattr(response, 'data', None), fresh=True)
+        response = self.wrap_response_data(getattr(response, 'data', None), fresh=True)
+        if not response.is_valid():
+            logger.warn("%s error: %s" % (type(response).__name__, response._data))
+        return response
 
     @proxy
     def wrap_response_data(self, data, **kwargs):
