@@ -92,6 +92,17 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
         response = self.backend_cls().call(self.url)
         self.assertFalse(response.is_valid())
 
+    def test_api_server_error_is_wrapped(self):
+        from armstrong.apps.embeds.backends import InvalidResponseError
+
+        def throw_error(*args, **kwargs):
+            from httplib2 import ServerNotFoundError
+            raise ServerNotFoundError
+
+        with fudge.patched_context(self.backend.client, 'oembed', throw_error):
+            with self.assertRaises(InvalidResponseError):
+                self.backend.call(self.url)
+
     def test_flickr_response(self):
         self._test_response_data(self.url, self.data)
         self._test_garbage_data_should_not_match_a_valid_response(self.url, self.data)

@@ -1,9 +1,10 @@
 from __future__ import absolute_import
 from django.conf import settings
 from embedly import Embedly as EmbedlyAPI
+from httplib2 import ServerNotFoundError
 
 from .. import logger
-from . import proxy
+from . import proxy, InvalidResponseError
 from .base_response import Response
 
 
@@ -66,8 +67,14 @@ class EmbedlyBackend(object):
             return None
 
         logger.debug("Embedly call to oembed('%s')" % url)
-        response = self.client.oembed(url)
-        return self.wrap_response_data(getattr(response, 'data', None), fresh=True)
+        try:
+            response = self.client.oembed(url)
+        except ServerNotFoundError:
+            #PY3 use PEP 3134 exception chaining
+            import sys
+            exc_cls, msg, trace = sys.exc_info()
+            raise InvalidResponseError, "%s: %s" % (exc_cls.__name__, msg), trace
+
         response = self.wrap_response_data(getattr(response, 'data', None), fresh=True)
         if not response.is_valid():
             logger.warn("%s error: %s" % (type(response).__name__, response._data))
