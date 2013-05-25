@@ -88,8 +88,9 @@ class Embed(models.Model):
     interacting with and extracting metadata from the external content.
 
     """
-    url = EmbedURLField(unique=True, response_field='response', assign_func="_auto_assign_backend")
-    backend = EmbedForeignKey(Backend, response_field='response')
+    url = EmbedURLField(unique=True, response_field='response')
+    backend = EmbedForeignKey(Backend, blank=True, response_field='response',
+        help_text="The most appropriate Backend will auto-assign if not explicitly provided")
 
     # Populated from the actual response
     _response = None
@@ -134,6 +135,17 @@ class Embed(models.Model):
         self.provider = None
         self.response_cache = None
 
+    def choose_backend(self):
+        """Determine the best Backend to use for this object's URL"""
+
+        if not self.url:
+            return None
+
+        for backend in Backend.objects.all().order_by('-priority'):
+            if re.search(backend.regex, self.url):
+                return backend
+        return None
+
     def get_response(self):
         """Retrieve a new response from the Backend"""
         return self.backend.call(self.url)
@@ -161,32 +173,16 @@ class Embed(models.Model):
             self.response = self.backend.wrap_response_data(self.response_cache)
 
     def save(self, *args, **kwargs):
-        """Try to get a response for new objects so we can save it as well"""
+        """Auto-assign a Backend and try to load response data for new Embeds"""
 
-        if not self.pk and not self.response:
-            try:
-                self.update_response()
-            except InvalidResponseError:
-                pass
+        if not self.pk:
+            # Due to the nature of ForeignKeys, use hasattr() instead of getattr()
+            if not hasattr(self, 'backend'):
+                self.backend = self.choose_backend()
+
+            if not self.response:
+                try:
+                    self.update_response()
+                except InvalidResponseError:
+                    pass
         super(Embed, self).save(*args, **kwargs)
-
-    def _auto_assign_backend(self):
-        """New objects without a backend are automatically assigned one"""
-
-        # Due to the nature of ForeignKeys, use hasattr() instead of getattr()
-        if self.url and not self.pk and not hasattr(self, 'backend'):
-            for backend in Backend.objects.all().order_by('-priority'):
-                if re.search(backend.regex, self.url):
-                    self.backend = backend
-                    break
-
-
-# HACK - We have a version of this issue where the backend ForeignKey relationship isn't
-# fully hooked up and save() fails. It only happens when the backend is assigned during
-# __init__(). To workaround, we register a signal to fix the pointer after init is complete.
-# http://stackoverflow.com/questions/13248994/django-assigning-foreign-key-before-target-model-is-saved
-def _assign_backend_hack(sender, instance, **kwargs):
-    # Due to the nature of ForeignKeys, use hasattr() instead of getattr()
-    if hasattr(instance, 'backend'):
-        instance.backend = instance.backend
-models.signals.post_init.connect(_assign_backend_hack, sender=Embed)

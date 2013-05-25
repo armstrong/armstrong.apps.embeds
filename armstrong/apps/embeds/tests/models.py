@@ -103,39 +103,62 @@ class EmbedModelTestCase(DjangoTestCase):
         with self.assertRaises(Backend.DoesNotExist):
             e.backend
 
-    def test_backend_doesnt_auto_assign_when_there_are_no_backends(self):
+    def test_embed_requires_backend(self):
+        e = Embed()
+        with self.assertRaises(ValueError):
+            e.save()
+
+    def test_backend_autoassigns_on_save(self):
+        e = Embed(url=self.url)
+        e.save()
+        self.assertTrue(hasattr(e, "backend"))
+        self.assertTrue(isinstance(e.backend, Backend))
+        self.assertTrue(isinstance(e.backend._backend, self.backend_cls))
+
+    def test_choose_backend_returns_none_when_there_is_no_url(self):
+        e = Embed()
+        self.assertIsNone(e.choose_backend())
+
+    def test_choose_backend_returns_none_when_there_are_no_backends(self):
         Backend.objects.all().delete()
         e = Embed(url=self.url)
-        self.assertFalse(hasattr(e, "backend"))
-        with self.assertRaises(Backend.DoesNotExist):
-            e.backend
+        self.assertIsNone(e.choose_backend())
 
-    def test_url_on_init_autoassigns_correct_backend(self):
+    def test_choose_backend(self):
         e = Embed(url=self.url)
-        self.assertTrue(hasattr(e, "backend"))
-        self.assertTrue(isinstance(e.backend, Backend))
-        self.assertTrue(isinstance(e.backend._backend, self.backend_cls))
+        b = e.choose_backend()
+        self.assertTrue(isinstance(b, Backend))
+        self.assertTrue(isinstance(b._backend, self.backend_cls))
+        self.assertEqual(b, self.backend)
 
-    def test_url_assigned_autoassigns_correct_backend(self):
-        e = Embed()
-        e.url = self.url
-        self.assertTrue(hasattr(e, "backend"))
-        self.assertTrue(isinstance(e.backend, Backend))
-        self.assertTrue(isinstance(e.backend._backend, self.backend_cls))
-
-    def test_backend_doesnt_reassign(self):
+    def test_choose_backend_gets_higher_priority_option(self):
         e = Embed(url=self.url)
-        backend = e.backend._backend
-        e.url = self.new_url
-        self.assertIs(backend, e.backend._backend)
 
-    def test_backend_doesnt_clear(self):
+        with fudge.patched_context(Backend, '__init__', fake_backend_init):
+            b1 = Backend.objects.create(name='b1', slug='b1', regex='.*', priority=5)
+            self.assertEqual(e.choose_backend(), b1)
+            b2 = Backend.objects.create(name='b2', slug='b2', regex='.*', priority=6)
+            self.assertEqual(e.choose_backend(), b2)
+
+    def test_choose_backend_skips_non_matching_regex(self):
         e = Embed(url=self.url)
-        backend = e.backend._backend
-        e.url = None
-        self.assertIs(backend, e.backend._backend)
-        e.url = ""
-        self.assertIs(backend, e.backend._backend)
+
+        with fudge.patched_context(Backend, '__init__', fake_backend_init):
+            Backend.objects.create(name='b1', slug='b1', regex='thiswontmatch', priority=5)
+            self.assertEqual(e.choose_backend(), self.backend)
+
+    def test_choose_backend_returns_none_without_matching_regex(self):
+        self.backend.regex = "thiswontmatch"
+        self.backend.save()
+
+        e = Embed(url=self.url)
+        self.assertIsNone(e.choose_backend())
+
+    def test_backend_cant_auto_assign_when_there_are_no_backends(self):
+        Backend.objects.all().delete()
+        e = Embed(url=self.url)
+        with self.assertRaises(ValueError):
+            e.save()
 
     def test_empty_embed_doesnt_have_response_data(self):
         e = Embed()
@@ -208,7 +231,7 @@ class EmbedModelTestCase(DjangoTestCase):
         p = Provider.objects.create(name='different')
         d = {'key': 'value'}
 
-        e = Embed(url=self.url, type=t, provider=p, response_cache=d)
+        e = Embed(url=self.url, backend=self.backend, type=t, provider=p, response_cache=d)
         self.response._fresh = False
         e.response = self.response
 
