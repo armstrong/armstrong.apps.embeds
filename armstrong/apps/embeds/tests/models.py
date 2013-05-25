@@ -10,6 +10,15 @@ from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultRespon
 from armstrong.apps.embeds.backends.base_response import Response
 
 
+def fake_backend_init(obj, *args, **kwargs):
+    """Don't error on non-unique slug field"""
+
+    from ..backends import get_backend
+    super(Backend, obj).__init__(*args, **kwargs)
+    obj._backend = get_backend('default')  # patching this part
+    obj._proxy_to_backend = []
+
+
 class BackendModelTestCase(DjangoTestCase):
     def setUp(self):
         self.url = "http://www.testme.com"
@@ -52,7 +61,7 @@ class BackendModelTestCase(DjangoTestCase):
         self.assertDictEqual(response._data, wrapped._data)
 
 
-class EmbedTestCase(DjangoTestCase):
+class EmbedModelTestCase(DjangoTestCase):
     fixtures = ['embed_backends']
 
     def setUp(self):
@@ -73,6 +82,7 @@ class EmbedTestCase(DjangoTestCase):
                 title='TestTitle'))
 
     def expect_empty_response_data(self, embed):
+        self.assertIsNone(embed._response)
         self.assertIsNone(embed.response)
         self.assertIsNone(embed.type)
         self.assertIsNone(embed.provider)
@@ -137,8 +147,6 @@ class EmbedTestCase(DjangoTestCase):
         with self.assertRaises(InvalidResponseError):
             e.response = None
 
-    def test_response_must_be_a_response_object_2(self):
-        e = Embed()
         with self.assertRaises(InvalidResponseError):
             e.response = "this should break"
 
@@ -198,8 +206,7 @@ class EmbedTestCase(DjangoTestCase):
 
     def test_response_cache_wraps_correctly(self):
         data = dict(a=2)
-        backend = self.backend
-        e = Embed(response_cache=data, backend=backend)
+        e = Embed(response_cache=data, backend=self.backend)
 
         self.assertDictEqual(e.response_cache, data)
         self.assertDictEqual(e.response._data, data)
@@ -207,8 +214,7 @@ class EmbedTestCase(DjangoTestCase):
 
     def test_wrapped_response_doesnt_update(self):
         data = dict(url=self.url)
-        backend = self.backend
-        e = Embed(url=self.url, response_cache=data, backend=backend)
+        e = Embed(url=self.url, response_cache=data, backend=self.backend)
         self.assertFalse(e.update_response())
 
     def test_update_requires_backend(self):
@@ -220,8 +226,8 @@ class EmbedTestCase(DjangoTestCase):
         self.assertTrue(e.update_response())
 
     def test_same_response_doesnt_update(self):
-        e = Embed(backend=self.backend)
-        e.response = self.response_cls(dict(url=''))
+        e = Embed(url=self.url, backend=self.backend)
+        e.response = self.response_cls(dict(url=self.url))
         self.assertFalse(e.update_response())
 
     def test_duplicate_update_doesnt_update(self):
@@ -265,19 +271,10 @@ class EmbedTestCase(DjangoTestCase):
         e.url = self.new_url
         self.expect_empty_response_data(e)
 
-    @fudge.patch('armstrong.apps.embeds.models.Backend')
-    def test_changing_backend_clears_response_data(self, FakeBackend):
+    def test_changing_backend_clears_response_data(self):
         e = Embed(backend=self.backend)
         e.response = self.response
         self.assertIsNotNone(e.response)
-
-        def fake_backend_init(obj, *args, **kwargs):
-            """Don't error on non-unique slug field"""
-
-            from ..backends import get_backend
-            super(Backend, obj).__init__(*args, **kwargs)
-            self._backend = get_backend('default')
-            self._proxy_to_backend = []
 
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
             e.backend = Backend(name='new', slug='new', regex='.*')

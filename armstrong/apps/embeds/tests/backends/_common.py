@@ -153,6 +153,14 @@ class CommonBackendTestCaseMixin(object):
         self.assertTrue(response.is_valid())
         self.assertTrue(response.is_fresh())
 
+    def test_wrapped_data_by_default_is_not_fresh(self):
+        wrapped = self.backend.wrap_response_data(self.data)
+        self.assertFalse(wrapped.is_fresh())
+
+    def test_wrapped_data_explicitly_is_fresh(self):
+        wrapped = self.backend.wrap_response_data(self.data, fresh=True)
+        self.assertTrue(wrapped.is_fresh())
+
     def test_wraps_response_data(self):
         response = self.backend.call(self.url)
         wrapped = self.backend.wrap_response_data(response._data)
