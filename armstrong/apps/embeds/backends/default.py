@@ -13,6 +13,8 @@ class DefaultBackend(object):
 
     @proxy
     def call(self, url):
+        if not url:
+            return None
         return self.wrap_response_data({'url': url}, fresh=True)
 
     @proxy

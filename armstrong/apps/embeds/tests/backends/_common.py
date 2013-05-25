@@ -140,6 +140,13 @@ class CommonBackendTestCaseMixin(object):
         with self.assertRaises(TypeError):
             self.backend.call()
 
+    def test_call_returns_none_if_url_is_empty(self):
+        self.assertIsNone(self.backend.call(None))
+        self.assertIsNone(self.backend.call(0))
+        self.assertIsNone(self.backend.call(""))
+        self.assertIsNone(self.backend.call([]))
+        self.assertIsNone(self.backend.call({}))
+
     def test_call_returns_response_data(self):
         response = self.backend.call(self.url)
         self.assertTrue(isinstance(response, self.response_cls))

@@ -65,6 +65,9 @@ class EmbedlyBackend(object):
 
     @proxy
     def call(self, url):
+        if not url:
+            return None
+
         logger.debug("Embedly call to oembed('%s')" % url)
         response = self.client.oembed(url)
         return self.wrap_response_data(getattr(response, 'data', None), fresh=True)
