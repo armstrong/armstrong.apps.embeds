@@ -15,7 +15,7 @@ def fake_backend_init(obj, *args, **kwargs):
     from ..backends import get_backend
     super(Backend, obj).__init__(*args, **kwargs)
     obj._backend = get_backend('default')  # patching this part
-    obj._proxy_to_backend = []
+    obj._setup_backend_proxy_methods()
 
 
 class BackendModelTestCase(DjangoTestCase):
@@ -118,6 +118,10 @@ class EmbedModelTestCase(DjangoTestCase):
     def test_choose_backend_returns_none_when_there_is_no_url(self):
         e = Embed()
         self.assertIsNone(e.choose_backend())
+
+    def test_choose_backend_works_with_passed_url(self):
+        e = Embed()
+        self.assertEqual(e.choose_backend(self.url), self.backend)
 
     def test_choose_backend_returns_none_when_there_are_no_backends(self):
         Backend.objects.all().delete()

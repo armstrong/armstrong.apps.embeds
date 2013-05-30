@@ -139,14 +139,14 @@ class Embed(models.Model):
         self.provider = None
         self.response_cache = None
 
-    def choose_backend(self):
+    def choose_backend(self, url=None):
         """Determine the best Backend to use for this object's URL"""
 
-        if not self.url:
+        if not (self.url or url):
             return None
 
         for backend in Backend.objects.all().order_by('-priority'):
-            if re.search(backend.regex, self.url):
+            if re.search(backend.regex, self.url or url):
                 return backend
         return None
 

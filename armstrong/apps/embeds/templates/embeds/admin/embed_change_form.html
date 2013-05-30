@@ -1,0 +1,101 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify %}
+
+{% block content %}
+<div id="content-main">
+	<form action="" method="post">
+		{% csrf_token %}
+		<fieldset class="module aligned">
+			<h2>{{ title }}</h2>
+			{{ form.non_field_errors }}
+			{% for hidden in form.hidden_fields %}
+				{{ hidden }}
+			{% endfor %}
+			{% for field in form.visible_fields %}
+				<div class="form-row">
+					{{ field.errors }}
+					<label{% if field.field.required %} class="required"{% endif %} for="{{ field.id_for_label }}">{{ field.label }}</label>
+					{{ field }}
+				</div>
+			{% endfor %}
+		</fieldset>
+		<input type="hidden" name="{{ stage_field }}" value="1" />
+		<div class="submit-row">
+			<input type="submit" value="{{ form1_submit_text }}"{% if not is_step2 %} class="default"{% endif %}/>
+		</div>
+	</form>
+
+	{% if response_error %}
+		<p class="{{ errornote_css_class }}">The response for this Embed is invalid. Here's the error data:</p>
+		<div class="aligned">
+			{% if response_error.items %}
+				{% for key, value in response_error.items %}
+					<label>{{ key }}:</label>
+					<p>{{ value }}</p>
+				{% endfor %}
+			{% else %}
+				{{ response_error }}
+			{% endif %}
+		</div>
+	{% endif %}
+
+	{% if is_step2 or form.instance.pk %}
+		<fieldset class="module aligned">
+			<h2>Response Data</h2>
+			<div class="form-row">
+	            <label>Provider:</label>
+	            <p>{{ form.instance.provider }}</p>
+		    </div>
+		    <div class="form-row">
+	            <label>Type:</label>
+	            <p>{{ form.instance.type }}</p>
+		    </div>
+		    <div class="form-row">
+	            <label>Response last updated:</label>
+	            {% if is_step2 %}
+	            	<p>just now</p>
+	            {% else %}
+	            	<p>{{ form.instance.response_last_updated }}</p>
+	            {% endif %}
+		    </div>
+		    <div class="form-row">
+	            <label>Response cache:</label>
+	            <p>{{ form.instance.response_cache }}</p>
+		    </div>
+		</fieldset>
+	{% endif %}
+
+	{% if is_step2 %}
+		<form action="" method="post">
+			{% csrf_token %}
+			{% for field in form %}
+				{{ field.as_hidden }}
+			{% endfor %}
+			<input type="hidden" name="{{ stage_field }}" value="2" />
+			<input type="hidden" name="{{ hash_field }}" value="{{ hash_value }}" />
+
+			{% if response_error %}
+				<p class="{{ errornote_css_class }}">You can still save this Embed but it won't be very useful without response data.</p>
+			{% endif %}
+
+			{% if duplicate_response %}
+				<p class="{{ errornote_css_class }}">There is no new response data.</p>
+				{% if show_delete and has_delete_permission %}
+					<div class="submit-row">
+						<p class="deletelink-box"><a href="delete/" class="deletelink">{% trans "Delete" %}</a></p>
+					</div>
+				{% endif %}
+			{% else %}
+				{% submit_row %}
+			{% endif %}
+		</form>
+	{% else %}
+		{% if show_delete and has_delete_permission %}
+			<div class="submit-row">
+				<p class="deletelink-box"><a href="delete/" class="deletelink">{% trans "Delete" %}</a></p>
+			</div>
+		{% endif %}
+	{% endif %}
+
+</div>
+{% endblock %}
