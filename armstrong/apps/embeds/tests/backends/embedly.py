@@ -1,8 +1,7 @@
 import fudge
-from django.conf import settings
 from django.test import TestCase
 
-from armstrong.apps.embeds.backends.embedly import EmbedlyResponse, EmbedlyBackend
+from armstrong.apps.embeds.backends.embedly import EmbedlyResponse, EmbedlyBackend, EmbedlyAPI
 from ._common import CommonBackendTestCaseMixin, CommonResponseTestCaseMixin
 
 
@@ -77,20 +76,29 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
         thumbnail_height=551,
         thumbnail_width=640)
 
-    @fudge.with_patched_object(settings, 'EMBEDLY_KEY', None)
     def test_missing_api_key(self):
-        with self.assertRaises(ValueError):
-            self.backend_cls().call(self.url)
+        def stub_key(obj):
+            obj.client = EmbedlyAPI(None)
 
-    @fudge.with_patched_object(settings, 'EMBEDLY_KEY', '')
+        with fudge.patched_context(self.backend_cls, '__init__', stub_key):
+            with self.assertRaises(ValueError):
+                self.backend_cls().call(self.url)
+
     def test_empty_api_key(self):
-        with self.assertRaises(ValueError):
-            self.backend_cls().call(self.url)
+        def stub_key(obj):
+            obj.client = EmbedlyAPI('')
 
-    @fudge.with_patched_object(settings, 'EMBEDLY_KEY', 'invalid_test_key')
+        with fudge.patched_context(self.backend_cls, '__init__', stub_key):
+            with self.assertRaises(ValueError):
+                self.backend_cls().call(self.url)
+
     def test_invalid_api_key(self):
-        response = self.backend_cls().call(self.url)
-        self.assertFalse(response.is_valid())
+        def stub_key(obj):
+            obj.client = EmbedlyAPI('invalid_test_key')
+
+        with fudge.patched_context(self.backend_cls, '__init__', stub_key):
+            response = self.backend_cls().call(self.url)
+            self.assertFalse(response.is_valid())
 
     def test_api_server_error_is_wrapped(self):
         from armstrong.apps.embeds.backends import InvalidResponseError
