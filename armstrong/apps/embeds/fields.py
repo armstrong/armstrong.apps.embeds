@@ -49,14 +49,19 @@ class EmbedForeignKey(SetResponseFieldMixin, models.ForeignKey):
     descriptor_class = ResetResponseFKDescriptor
 
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([
-    (
-        [EmbedURLField, EmbedForeignKey],
-        [],
-        dict(response_field=("response_field", {}))
-    )
-], [
-    "^armstrong\.apps\.embeds\.fields\.EmbedURLField",
-    "^armstrong\.apps\.embeds\.fields\.EmbedForeignKey"
-])
+# If South is installed, create migration rules
+try:
+    from south.modelsinspector import add_introspection_rules
+except ImportError:
+    pass
+else:
+    add_introspection_rules([
+        (
+            [EmbedURLField, EmbedForeignKey],
+            [],
+            dict(response_field=("response_field", {}))
+        )
+    ], [
+        "^armstrong\.apps\.embeds\.fields\.EmbedURLField",
+        "^armstrong\.apps\.embeds\.fields\.EmbedForeignKey"
+    ])
