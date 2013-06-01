@@ -35,6 +35,14 @@ class Backend(models.Model):
         return "%s (priority: %i; regex: %s)" \
             % (self.name, self.priority, self.regex)
 
+    def _setup_backend_proxy_methods(self):
+        """Ease of use: passthrough methods to the backend API for transparency to the calling code"""
+
+        self._proxy_to_backend = []
+        for name, method in inspect.getmembers(self._backend, inspect.ismethod):
+            if hasattr(method, 'proxy') and method.proxy:
+                self._proxy_to_backend.append(name)
+
     def __init__(self, *args, **kwargs):
         super(Backend, self).__init__(*args, **kwargs)
 
@@ -44,11 +52,7 @@ class Backend(models.Model):
         except ImportError as e:
             raise ImproperlyConfigured('Backends must have a code module: %s' % e)
 
-        # Ease of use: passthrough methods to the backend API for transparency to the calling code
-        self._proxy_to_backend = []
-        for name, method in inspect.getmembers(self._backend, inspect.ismethod):
-            if hasattr(method, 'proxy') and method.proxy:
-                self._proxy_to_backend.append(name)
+        self._setup_backend_proxy_methods()
 
     def __getattr__(self, name):
         if name in self._proxy_to_backend:
