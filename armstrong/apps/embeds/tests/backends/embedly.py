@@ -1,5 +1,7 @@
 import fudge
+import django
 from django.test import TestCase
+from django.utils import unittest
 from django.core.exceptions import ImproperlyConfigured
 
 from armstrong.apps.embeds.backends.embedly import EmbedlyResponse, EmbedlyBackend
@@ -82,27 +84,21 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
         with self.assertRaises(ImproperlyConfigured):
             self.backend_cls()
 
+    @unittest.skipIf(django.VERSION < (1, 4), 'feature added in Django 1.4')
     def test_missing_api_key(self):
-        def stub_key(obj):
-            obj.client = EmbedlyAPI(None)
-
-        with fudge.patched_context(self.backend_cls, '__init__', stub_key):
+        with self.settings(EMBEDLY_KEY=None):
             with self.assertRaises(ValueError):
                 self.backend_cls().call(self.url)
 
+    @unittest.skipIf(django.VERSION < (1, 4), 'feature added in Django 1.4')
     def test_empty_api_key(self):
-        def stub_key(obj):
-            obj.client = EmbedlyAPI('')
-
-        with fudge.patched_context(self.backend_cls, '__init__', stub_key):
+        with self.settings(EMBEDLY_KEY=''):
             with self.assertRaises(ValueError):
                 self.backend_cls().call(self.url)
 
+    @unittest.skipIf(django.VERSION < (1, 4), 'feature added in Django 1.4')
     def test_invalid_api_key(self):
-        def stub_key(obj):
-            obj.client = EmbedlyAPI('invalid_test_key')
-
-        with fudge.patched_context(self.backend_cls, '__init__', stub_key):
+        with self.settings(EMBEDLY_KEY='invalid_test_key'):
             response = self.backend_cls().call(self.url)
             self.assertFalse(response.is_valid())
 
