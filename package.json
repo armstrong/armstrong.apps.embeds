@@ -4,7 +4,7 @@
     "description": "Provides a way to store, relate to, extract metadata and embed content from external URLs via a modular backend system",
     "install_requires": [
         "django-extensions>=1.0.3",
-        "django-model-utils>=1.2.0",
+        "django-model-utils>=1.2.0,<1.4",
         "embedly"
     ],
     "dependency_links": ["http://github.com/joncotton/embedly-python/tarball/combine_tidy_and_dict#egg=embedly"]
