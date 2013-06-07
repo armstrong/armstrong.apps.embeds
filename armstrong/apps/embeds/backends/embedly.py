@@ -58,7 +58,13 @@ class EmbedlyBackend(object):
     response_class = EmbedlyResponse
 
     def __init__(self):
-        key = getattr(settings, 'EMBEDLY_KEY')
+        try:
+            key = getattr(settings, 'EMBEDLY_KEY')
+        except AttributeError:
+            from django.core.exceptions import ImproperlyConfigured
+            raise ImproperlyConfigured(
+                '%s requires an API key be specified in settings' %
+                type(self).__name__)
         self.client = EmbedlyAPI(key)
 
     @proxy

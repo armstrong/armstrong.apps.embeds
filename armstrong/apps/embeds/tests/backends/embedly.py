@@ -1,7 +1,8 @@
 import fudge
 from django.test import TestCase
+from django.core.exceptions import ImproperlyConfigured
 
-from armstrong.apps.embeds.backends.embedly import EmbedlyResponse, EmbedlyBackend, EmbedlyAPI
+from armstrong.apps.embeds.backends.embedly import EmbedlyResponse, EmbedlyBackend
 from ._common import CommonBackendTestCaseMixin, CommonResponseTestCaseMixin
 
 
@@ -75,6 +76,11 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
         thumbnail_url="https://farm4.staticflickr.com/3126/3110936222_7374acb6a6_z.jpg?zz=1",
         thumbnail_height=551,
         thumbnail_width=640)
+
+    @fudge.patch('armstrong.apps.embeds.backends.embedly.settings')
+    def test_requires_api_key_in_settings(self, fake_settings):
+        with self.assertRaises(ImproperlyConfigured):
+            self.backend_cls()
 
     def test_missing_api_key(self):
         def stub_key(obj):
