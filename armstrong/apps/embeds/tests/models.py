@@ -1,12 +1,13 @@
+import fudge
 from datetime import datetime, timedelta
 
 from django.test import TestCase as DjangoTestCase
 from django.core.exceptions import ImproperlyConfigured
-import fudge
 
 from armstrong.apps.embeds.models import Embed, Backend, Type, Provider
 from armstrong.apps.embeds.backends import InvalidResponseError
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
+from .arm_layout_mixin import CommonMixin
 
 
 def fake_backend_init(obj, *args, **kwargs):
@@ -392,3 +393,67 @@ class EmbedModelTestCase(DjangoTestCase):
         e.update_response()
         e.save()
         self.assertGreater(e.response_last_updated, dt)
+
+
+class EmbedModelLayoutTestCase(CommonMixin, DjangoTestCase):
+    fixtures = ['embed_backends']
+
+    def setUp(self):
+        # Remove everything but the default Backend
+        Backend.objects.exclude(slug="default").delete()
+
+        self.embed = Embed(
+            url="http://www.testme.com",
+            backend=Backend.objects.get(slug='default'))
+        super(EmbedModelLayoutTestCase, self).setUp()
+
+    def test_no_backend_uses_fallback_template(self):
+        e = Embed(url="http://www.testme.com")
+        self.assertFalse(hasattr(e, 'backend'))
+
+        expected = ['%(base)s/%(app)s/%(model)s/%(tpl)s.html']
+        self.compare_templates(e, expected, use_fallback=True)
+
+    def test_valid_response_without_a_type(self):
+        self.embed.update_response()
+
+        self.assertTrue(self.embed.response.is_valid())
+        self.assertIsNone(self.embed.type)
+
+        expected = ['%(base)s/%(app)s/%(model)s/%(tpl)s.html']
+        self.compare_templates(self.embed, expected)
+
+    def test_invalid_response_without_a_type_uses_fallback(self):
+        response = self.embed.get_response()
+        response.is_valid = lambda: False
+        self.embed.response = response
+
+        self.assertFalse(self.embed.response.is_valid())
+        self.assertIsNone(self.embed.type)
+
+        expected = ['%(base)s/%(app)s/%(model)s/%(tpl)s.html']
+        self.compare_templates(self.embed, expected, use_fallback=True)
+
+    def test_invalid_response_with_a_type_uses_fallback(self):
+        response = self.embed.get_response()
+        response.is_valid = lambda: False
+        self.embed.response = response
+        self.embed.type = Type(name=self.type_name)
+
+        self.assertFalse(self.embed.response.is_valid())
+
+        expected = [
+            '%(base)s/%(app)s/%(model)s/%(type)s/%(tpl)s.html',
+            '%(base)s/%(app)s/%(model)s/%(tpl)s.html']
+        self.compare_templates(self.embed, expected, use_fallback=True)
+
+    def test_valid_response_with_a_type(self):
+        self.embed.update_response()
+        self.embed.type = Type(name=self.type_name)
+
+        self.assertTrue(self.embed.response.is_valid())
+
+        expected = [
+            '%(base)s/%(app)s/%(model)s/%(type)s/%(tpl)s.html',
+            '%(base)s/%(app)s/%(model)s/%(tpl)s.html']
+        self.compare_templates(self.embed, expected)
