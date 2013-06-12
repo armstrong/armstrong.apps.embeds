@@ -25,6 +25,7 @@ class BackendModelTestCase(DjangoTestCase):
         self.data = dict(url=self.url)
         self.backend_cls = DefaultBackend
         self.response_cls = DefaultResponse
+        self.backend = Backend(slug='default')
 
     def test_empty_model_fails(self):
         with self.assertRaises(ImproperlyConfigured):
@@ -35,29 +36,26 @@ class BackendModelTestCase(DjangoTestCase):
             Backend(slug='fake')
 
     def test_model_inits_properly(self):
-        b = Backend(slug='default')
-        self.assertTrue(isinstance(b._backend, self.backend_cls))
+        self.assertTrue(isinstance(self.backend._backend, self.backend_cls))
 
     def test_model_proxys_properly(self):
-        b = Backend(slug='default')
-        for method_name in b._proxy_to_backend:
-            self.assertEqual(getattr(b, method_name).im_self, b._backend)
+        for method_name in self.backend._proxy_to_backend:
+            self.assertEqual(
+                getattr(self.backend, method_name).im_self,
+                self.backend._backend)
 
     def test_model_calls_properly(self):
-        b = Backend(slug='default')
-        response = b.call(self.url)
+        response = self.backend.call(self.url)
         self.assertTrue(isinstance(response, self.response_cls))
 
     def test_model_wraps_data_properly(self):
-        b = Backend(slug='default')
-        wrapped = b.wrap_response_data(self.data)
+        wrapped = self.backend.wrap_response_data(self.data)
         self.assertTrue(isinstance(wrapped, self.response_cls))
         self.assertDictEqual(wrapped._data, self.data)
 
     def test_wrapped_response_equals_original_response(self):
-        b = Backend(slug='default')
-        response = b.call(self.url)
-        wrapped = b.wrap_response_data(response._data)
+        response = self.backend.call(self.url)
+        wrapped = self.backend.wrap_response_data(response._data)
         self.assertDictEqual(response._data, wrapped._data)
 
 
