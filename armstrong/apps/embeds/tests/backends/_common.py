@@ -25,6 +25,9 @@ class CommonResponseTestCaseMixin(object):
     def test_responses_are_not_equal(self):
         self.assertNotEqual(self.response_cls({'data': 1}), self.response_cls({'data': 2}))
 
+    def test_response_not_equal_to_nonresponse(self):
+        self.assertNotEqual(self.response_cls({'data': 1}), 'string')
+
     def test_is_fresh(self):
         self.assertTrue(self.response_cls({}, True).is_fresh())
 

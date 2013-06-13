@@ -7,7 +7,8 @@ from django.contrib.auth.models import User, Permission
 
 from armstrong.apps.embeds.models import Backend, Embed
 from armstrong.apps.embeds.forms import EmbedForm
-from armstrong.apps.embeds.backends.default import DefaultResponse
+from armstrong.apps.embeds.backends import InvalidResponseError, proxy
+from armstrong.apps.embeds.backends.default import DefaultResponse, DefaultBackend
 from .models import fake_backend_init
 
 __all__ = ['EmbedAdminAddTestCase', 'EmbedAdminChangeTestCase']
@@ -72,6 +73,14 @@ class EmbedAdminBaseTestCase(object):
         submit['csrfmiddlewaretoken'] = str(r.context['csrf_token'])
         return submit, r
 
+    def invalid_response_strings(self, response):
+        self.assertContains(response,
+            "The response for this Embed is invalid. Here's the error data:")
+        self.assertContains(response,
+            "You can still save this Embed but it won't be very useful without response data.")
+        self.assertContains(response,
+            "Invalid response from the Backend API")
+
     def test_admin_site_requires_login(self):
         self.client.logout()
         r = self.client.get(self.changelist_url)
@@ -124,6 +133,13 @@ class EmbedAdminBaseTestCase(object):
         r = self.client.post(self.url, self.valid_data)
         self._on_step2('assertTrue', r)
 
+    def test_failed_form_on_step2_goes_back_to_step1(self):
+        submit, _ = self._prepare_step2_data(self.url, self.valid_data)
+        submit['url'] = ''  # bad data
+
+        r = self.client.post(self.url, submit)
+        self._on_step2('assertFalse', r)
+
     def test_step2_has_response_data(self):
         r = self.client.post(self.url, self.valid_data)
         self.assertContains(r, 'Response Data')
@@ -136,12 +152,34 @@ class EmbedAdminBaseTestCase(object):
     def test_step2_invalid_response_shows_errors(self):
         with fudge.patched_context(DefaultResponse, 'is_valid', return_false):
             r = self.client.post(self.url, self.valid_data)
-            self.assertContains(r,
-                "The response for this Embed is invalid. Here's the error data:")
-            self.assertContains(r,
-                "You can still save this Embed but it won't be very useful without response data.")
-            self.assertContains(r,
-                "Invalid response from the Backend API")
+            self.invalid_response_strings(r)
+
+    def test_step2_invalid_response_with_string_exception_shows_errors(self):
+        err = "exception string not a dict"
+
+        @proxy
+        def raise_exc(obj, url):
+            raise InvalidResponseError(err)
+
+        with fudge.patched_context(DefaultBackend, 'call', raise_exc):
+            r = self.client.post(self.url, self.valid_data)
+            self.invalid_response_strings(r)
+            self.assertContains(r, err)
+
+    def test_step2_invalid_response_with_string_dict_shows_errors(self):
+        key = "dict_key_for_error"
+        err = "exception has a dict of data"
+
+        @proxy
+        def raise_exc(obj, url):
+            raise InvalidResponseError(
+                {key: err, 'second': 'more information'})
+
+        with fudge.patched_context(DefaultBackend, 'call', raise_exc):
+            r = self.client.post(self.url, self.valid_data)
+            self.invalid_response_strings(r)
+            self.assertContains(r, key)
+            self.assertContains(r, err)
 
     def test_step2_invalid_response_is_still_saveable(self):
         with fudge.patched_context(DefaultResponse, 'is_valid', return_false):
@@ -150,10 +188,17 @@ class EmbedAdminBaseTestCase(object):
 
     def test_save_requires_hash(self):
         submit, r = self._prepare_step2_data(self.add_url, self.valid_data)
-        submit[r.context['hash_field']] = "thiswontwork"
-        r = self.client.post(self.add_url, submit)
+        submit[r.context['hash_field']] = "invalid"
+        self.client.post(self.add_url, submit)
 
         self.assertEqual(Embed.objects.count(), self.obj_count)
+
+    def test_bad_security_hash_on_step2_remains_on_step2(self):
+        submit, r = self._prepare_step2_data(self.url, self.valid_data)
+        submit[r.context['hash_field']] = 'invalid'
+
+        r2 = self.client.post(self.url, submit)
+        self._on_step2('assertTrue', r2)
 
     def test_save_creates_object(self):
         submit, _ = self._prepare_step2_data(self.add_url, self.valid_data)
@@ -247,11 +292,10 @@ class EmbedAdminChangeTestCase(EmbedAdminBaseTestCase, TestCase):
         self.assertContains(r, 'href="delete/"')
 
     def test_no_delete_link_without_permission(self):
-        add_perm = Permission.objects.get(codename="add_embed")
         chg_perm = Permission.objects.get(codename="change_embed")
         del_perm = Permission.objects.get(codename="delete_embed")
         self.user.is_superuser = False
-        self.user.user_permissions.add(add_perm, chg_perm, del_perm)
+        self.user.user_permissions.add(chg_perm, del_perm)
         self.user.save()
 
         r = self.client.get(self.url)
@@ -264,6 +308,36 @@ class EmbedAdminChangeTestCase(EmbedAdminBaseTestCase, TestCase):
         r = self.client.get(self.url)
         self.assertNotContains(r, 'href="delete/"')
         self.assertFalse(r.context['has_delete_permission'])
+
+    def test_cannot_delete_without_permission(self):
+        del_perm = Permission.objects.get(codename="delete_embed")
+        self.user.is_superuser = False
+        self.user.user_permissions.add(del_perm)
+        self.user.save()
+
+        r = self.client.get("%sdelete/" % self.url)
+        self.assertEqual(r.status_code, 200)
+
+        self.user.user_permissions.remove(del_perm)
+        self.user.save()
+
+        r = self.client.get("%sdelete/" % self.url)
+        self.assertEqual(r.status_code, 403)
+
+    def test_cannot_change_without_permission(self):
+        chg_perm = Permission.objects.get(codename="change_embed")
+        self.user.is_superuser = False
+        self.user.user_permissions.add(chg_perm)
+        self.user.save()
+
+        r = self.client.get(self.url)
+        self.assertEqual(r.status_code, 200)
+
+        self.user.user_permissions.remove(chg_perm)
+        self.user.save()
+
+        r = self.client.get(self.url)
+        self.assertEqual(r.status_code, 403)
 
     @unittest.skipIf(django.VERSION >= (1, 5), 'pre-Django 1.5 required a 404.html template')
     def test_invalid_object_id_attempts_404(self):
@@ -297,7 +371,7 @@ class EmbedAdminChangeTestCase(EmbedAdminBaseTestCase, TestCase):
         _, r = self._prepare_step2_data(self.url, self.current_data)
         self.assertContains(r, 'value="Save"')
 
-    def test_save_existing_updates_existing(self):
+    def test_changing_existing_data_updates_the_record(self):
         self.current_data['url'] = "http://anew.url.com/"
         submit, _ = self._prepare_step2_data(self.url, self.current_data)
         r = self.client.post(self.url, submit)

@@ -5,7 +5,7 @@ from django.test import TestCase as DjangoTestCase
 from django.core.exceptions import ImproperlyConfigured
 
 from armstrong.apps.embeds.models import Embed, Backend, Type, Provider
-from armstrong.apps.embeds.backends import InvalidResponseError
+from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
 from .arm_layout_mixin import CommonMixin
 
@@ -43,6 +43,18 @@ class BackendModelTestCase(DjangoTestCase):
             self.assertEqual(
                 getattr(self.backend, method_name).im_self,
                 self.backend._backend)
+
+    def test_using_proxy_decorator(self):
+        class Stub(self.backend_cls):
+            proxy_me = proxy(lambda _: "made it here")
+            but_not_me = lambda _: "unseen"
+
+        self.backend._backend = Stub()
+        self.backend._setup_backend_proxy_methods()
+
+        self.assertEqual(self.backend.proxy_me(), "made it here")
+        with self.assertRaises(AttributeError):
+            self.backend.but_not_me()
 
     def test_model_calls_properly(self):
         response = self.backend.call(self.url)
@@ -326,6 +338,17 @@ class EmbedModelTestCase(DjangoTestCase):
         e.save()
         self.assertIsNotNone(e.response)
         self.assertTrue(isinstance(e.response, self.response_cls))
+
+    def test_new_embed_doesnt_have_to_create_response_on_save(self):
+        def raise_exec(obj):
+            raise InvalidResponseError
+
+        e = Embed(url=self.url)
+        self.assertIsNone(e.response)
+
+        with fudge.patched_context(Embed, 'update_response', raise_exec):
+            e.save()
+            self.assertIsNone(e.response)
 
     def test_deleting_response_clears_data(self):
         e = Embed()
