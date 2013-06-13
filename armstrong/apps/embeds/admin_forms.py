@@ -141,7 +141,6 @@ class AdminFormPreview(FormPreview):
         render_params = self.get_render_change_form_params(request)
         return self.admin.render_change_form(request, context, **render_params)
 
-    @transaction.commit_on_success
     def post_post(self, request):
         """
         Validates the POST data. If valid, calls done(). Else, redisplays form.
@@ -156,7 +155,9 @@ class AdminFormPreview(FormPreview):
             if not self._check_security_hash(request.POST.get(self.unused_name('hash'), ''),
                                              request, f):
                 return self.failed_hash(request)  # Security hash failed
-            return self.done(request, f.cleaned_data)
+
+            with transaction.commit_on_success():
+                return self.done(request, f.cleaned_data)
         else:
             return self.preview_post(request)
 
