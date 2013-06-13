@@ -1,0 +1,4 @@
+<a href="{{ object.url }}" target="_blank">{{ object.url }}</a>
+{% if not object.response.is_valid %}
+	<script>window.console && console.warn("broken embed: {{ object.pk }}-{{ object.url }}");</script>
+{% endif %}

@@ -1,0 +1,9 @@
+<div class="embed-photo">
+	<a href="{{ object.url }}" target="_blank">
+		<img src="{{ object.response.image_url }}" height="{{ object.response.image_height }}" width="{{ object.response.image_width }}">
+	</a>
+	<div class="caption">
+		<div class="title">{{ object.response.title }}</div>
+		<div class="source">Source: <a href="{{ object.response.author_url }}" target="_blank">{{ object.response.author_name }}</a></div>
+	</div>
+</div>

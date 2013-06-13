@@ -1,0 +1,9 @@
+{% spaceless %}
+<a href="{{ object.url }}" target="_blank">
+	{% if object.response.title %}
+		{{ object.response.title }}
+	{% else %}
+		{{ object.url }}
+	{% endif %}
+</a>
+{% endspaceless %}
