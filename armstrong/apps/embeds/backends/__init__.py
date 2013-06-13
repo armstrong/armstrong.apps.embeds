@@ -23,8 +23,8 @@ def proxy(view_func=None):
 
     def decorator(view_func):
         @wraps(view_func)
-        def wrapper(request, *args, **kwargs):
-            return view_func(request, *args, **kwargs)
+        def wrapper(*args, **kwargs):
+            return view_func(*args, **kwargs)
         return wrapper
 
     retval = decorator if not view_func else decorator(view_func)
