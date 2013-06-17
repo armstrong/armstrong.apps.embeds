@@ -117,17 +117,6 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
         self._test_response_data(self.url, self.data)
         self._test_garbage_data_should_not_match_a_valid_response(self.url, self.data)
 
-    def test_twitter_response(self):
-        url = "https://twitter.com/shariv67/status/243789402273378305"
-        data = dict(
-            provider_name="Twitter",
-            type="rich",
-            author_name="shariv67",
-            author_url="http://twitter.com/shariv67")
-
-        self._test_response_data(url, data)
-        self._test_garbage_data_should_not_match_a_valid_response(url, data)
-
     def test_youtube_response(self):
         url = "https://www.youtube.com/watch?v=341Z3YW3mO0"
         data = dict(
