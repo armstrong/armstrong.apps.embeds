@@ -20,5 +20,16 @@
       "name": "Embedly",
       "slug": "embedly"
     }
+  },
+  {
+    "pk": 3,
+    "model": "embeds.backend",
+    "fields": {
+      "regex": "//twitter.com/",
+      "priority": 2,
+      "description": "Simple Twitter tag wrapper. Does not use the Twitter API and cannot provide any metadata.",
+      "name": "Twitter Non-API",
+      "slug": "twitter"
+    }
   }
 ]
