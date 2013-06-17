@@ -1,5 +1,6 @@
+{% load embed_helpers %}
 <div class="embed-video">
-	{{ object.response.render|safe }}
+	{{ object.response.render|resize_iframe:645|safe }}
 	<div class="caption">
 		<div class="title">{{ object.response.title }}</div>
 		<div class="source">Source: <a href="{{ object.response.author_url }}" target="_blank">{{ object.response.author_name }}</a></div>
