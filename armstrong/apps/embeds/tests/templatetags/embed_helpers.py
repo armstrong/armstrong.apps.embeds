@@ -3,7 +3,7 @@ import fudge
 from StringIO import StringIO
 from logging import StreamHandler
 from django.template import TemplateSyntaxError
-from django.test import TestCase as DjangoTestCase
+from django.test import TestCase
 
 from ... import logger
 from ...templatetags.embed_helpers import resize_iframe
@@ -12,7 +12,7 @@ from ...templatetags.embed_helpers import resize_iframe
 __all__ = ['ResizeIframeWithoutLXMLTestCase', 'ResizeIframeTestCase']
 
 
-class ResizeIframeWithoutLXMLTestCase(DjangoTestCase):
+class ResizeIframeWithoutLXMLTestCase(TestCase):
     def setUp(self):
         """
         Force import of the module we need to fake so we know the real module,
@@ -41,7 +41,7 @@ class ResizeIframeWithoutLXMLTestCase(DjangoTestCase):
         self.assertEqual(value, resize_iframe(value, 200))
 
 
-class ResizeIframeTestCase(DjangoTestCase):
+class ResizeIframeTestCase(TestCase):
     def setUp(self):
         self.height = 300
         self.width = 560

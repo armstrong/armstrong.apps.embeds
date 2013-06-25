@@ -1,10 +1,10 @@
-from django.test import TestCase as DjangoTestCase
+from django.test import TestCase
 
 from armstrong.apps.embeds.backends.base_response import Response
 from ._common import CommonResponseTestCaseMixin
 
 
-class ResponseTestCase(CommonResponseTestCaseMixin, DjangoTestCase):
+class ResponseTestCase(CommonResponseTestCaseMixin, TestCase):
     response_cls = Response
 
     def test_is_valid_is_not_implemented(self):

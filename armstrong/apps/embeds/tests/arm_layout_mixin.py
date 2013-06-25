@@ -1,6 +1,6 @@
 import fudge
 from django.db import models
-from django.test import TestCase as DjangoTestCase
+from django.test import TestCase
 
 from ..arm_layout_mixin import TemplatesByResponseTypeMixin
 
@@ -36,7 +36,7 @@ class CommonMixin(object):
         self.assertEqual(result, final)
 
 
-class TemplatesByResponseTypeTestCase(CommonMixin, DjangoTestCase):
+class TemplatesByResponseTypeTestCase(CommonMixin, TestCase):
     def test_sanity_check_mixin_has_methods(self):
         obj = TemplatesByResponseTypeMixin()
         self.assertTrue(hasattr(obj, 'get_layout_template_name'))

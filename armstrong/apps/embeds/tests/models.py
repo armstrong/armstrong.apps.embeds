@@ -1,7 +1,7 @@
 import fudge
 from datetime import datetime, timedelta
 
-from django.test import TestCase as DjangoTestCase
+from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 
 from armstrong.apps.embeds.models import Embed, Backend, Type, Provider
@@ -19,7 +19,7 @@ def fake_backend_init(obj, *args, **kwargs):
     obj._setup_backend_proxy_methods()
 
 
-class BackendModelTestCase(DjangoTestCase):
+class BackendModelTestCase(TestCase):
     def setUp(self):
         self.url = "http://www.testme.com"
         self.data = dict(url=self.url)
@@ -71,7 +71,7 @@ class BackendModelTestCase(DjangoTestCase):
         self.assertDictEqual(response._data, wrapped._data)
 
 
-class EmbedModelTestCase(DjangoTestCase):
+class EmbedModelTestCase(TestCase):
     fixtures = ['embed_backends']
 
     def setUp(self):
@@ -416,7 +416,7 @@ class EmbedModelTestCase(DjangoTestCase):
         self.assertGreater(e.response_last_updated, dt)
 
 
-class EmbedModelLayoutTestCase(CommonMixin, DjangoTestCase):
+class EmbedModelLayoutTestCase(CommonMixin, TestCase):
     fixtures = ['embed_backends']
 
     def setUp(self):
