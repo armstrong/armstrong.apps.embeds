@@ -1,3 +1,6 @@
+import pkg_resources
+pkg_resources.declare_namespace(__name__)
+
 from importlib import import_module
 from functools import wraps
 
