@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 
-from armstrong.apps.embeds.models import Embed, Backend, Type, Provider
+from armstrong.apps.embeds.models import Embed, Backend, EmbedType, Provider
 from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
 from .arm_layout_mixin import CommonMixin
@@ -242,7 +242,7 @@ class EmbedModelTestCase(TestCase):
         self.assertEqual(e.response_cache, {})
 
     def test_un_fresh_response_doesnt_alter_properties(self):
-        t = Type.objects.create(name='different')
+        t = EmbedType.objects.create(name='different')
         p = Provider.objects.create(name='different')
         d = {'key': 'value'}
 
@@ -276,7 +276,7 @@ class EmbedModelTestCase(TestCase):
         self.response.__class__ = CustomResponse
         self.assertFalse(self.response.is_valid())
 
-        t = Type.objects.create(name='different')
+        t = EmbedType.objects.create(name='different')
         p = Provider.objects.create(name='different')
         d = {'key': 'value'}
 
@@ -459,7 +459,7 @@ class EmbedModelLayoutTestCase(CommonMixin, TestCase):
         response = self.embed.get_response()
         response.is_valid = lambda: False
         self.embed.response = response
-        self.embed.type = Type(name=self.type_name)
+        self.embed.type = EmbedType(name=self.type_name)
 
         self.assertFalse(self.embed.response.is_valid())
 
@@ -470,7 +470,7 @@ class EmbedModelLayoutTestCase(CommonMixin, TestCase):
 
     def test_valid_response_with_a_type(self):
         self.embed.update_response()
-        self.embed.type = Type(name=self.type_name)
+        self.embed.type = EmbedType(name=self.type_name)
 
         self.assertTrue(self.embed.response.is_valid())
 

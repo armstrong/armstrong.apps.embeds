@@ -1,4 +1,4 @@
-from ..models import Type, Provider
+from ..models import EmbedType, Provider
 
 
 class Response(object):
@@ -30,7 +30,7 @@ class Response(object):
             self._type = None
             name = self._data.get(self._type_field)
             if name:
-                self._type, _ = Type.objects.get_or_create(name=name)
+                self._type, _ = EmbedType.objects.get_or_create(name=name)
         return self._type
 
     @property

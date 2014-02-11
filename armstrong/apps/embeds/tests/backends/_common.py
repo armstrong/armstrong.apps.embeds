@@ -2,7 +2,7 @@ import inspect
 from functools import wraps
 from abc import ABCMeta, abstractproperty
 
-from armstrong.apps.embeds.models import Provider, Type
+from armstrong.apps.embeds.models import Provider, EmbedType
 from armstrong.apps.embeds.backends import get_backend
 
 
@@ -42,7 +42,7 @@ class CommonResponseTestCaseMixin(object):
 
     def test_empty_data_does_not_create_type(self):
         self.response_cls().type
-        self.assertFalse(Type.objects.exists())
+        self.assertFalse(EmbedType.objects.exists())
 
     def test_empty_data_does_not_create_provider(self):
         self.response_cls().provider
@@ -50,9 +50,9 @@ class CommonResponseTestCaseMixin(object):
 
     def test_creates_type(self):
         r = self.response_cls({'type': 'TestType'})
-        self.assertTrue(isinstance(r.type, Type))
+        self.assertTrue(isinstance(r.type, EmbedType))
         self.assertEqual(r.type.name, 'TestType')
-        self.assertEqual(Type.objects.count(), 1)
+        self.assertEqual(EmbedType.objects.count(), 1)
 
     def test_creates_provider(self):
         r = self.response_cls({'provider_name': 'TestProvider'})
@@ -65,9 +65,9 @@ class CommonResponseTestCaseMixin(object):
             _type_field = "custom"
 
         r = CustomResponse({'custom': 'TestType'})
-        self.assertTrue(isinstance(r.type, Type))
+        self.assertTrue(isinstance(r.type, EmbedType))
         self.assertEqual(r.type.name, 'TestType')
-        self.assertEqual(Type.objects.count(), 1)
+        self.assertEqual(EmbedType.objects.count(), 1)
 
     def test_creates_provider_from_custom_provider_field(self):
         class CustomResponse(self.response_cls):

@@ -86,10 +86,10 @@ Usage
 -----
 **A quick overview of the four models--**
 
-``Type`` and ``Provider`` do essentially nothing besides normalize the database
-and provide a quick way to perform aggregation queries. Type is based on the
-four `oEmbed`_ types, though in practice you'll likely have a fifth ``error``
-type (and that's okay).
+``EmbedType`` and ``Provider`` do essentially nothing besides normalize the
+database and provide a quick way to perform aggregation queries. EmbedType is
+based on the four `oEmbed`_ types, though in practice you'll likely have a
+fifth ``error`` type (and that's okay).
 
 ``Backend`` is the front-end model for the actual code that connects to
 third-party APIs to retrieve response data for the external content URLs.
@@ -122,14 +122,14 @@ subclass of the ``Response`` object with a standard set of attributes.
 ``is_valid()`` will be False in cases where the API had a problem, didn't
 return data, 404'd, etc. ``is_fresh()`` will be True when the response is
 fresh off the wire. It's used to differentiate from database cached response
-data and you can probably ignore it. ``type`` and ``provider`` are ``Type``
-and ``Provider`` model objects. ``_data`` holds the actual raw response in
-JSON. The goal is to never directly access this. Instead, the Response class
-is subclassed by each backend/API and tailored to parse the raw data into
-standardized attributes. This way who cares if it's YouTube or Vimeo, access
-the object the same and share the templates. These attributes return an empty
-string when nothing is available and are therefore *template safe*.
-The current data attributes are:
+data and you can probably ignore it. ``type`` and ``provider`` are
+``EmbedType`` and ``Provider`` model objects. ``_data`` holds the actual raw
+response in JSON. The goal is to never directly access this. Instead, the
+Response class is subclassed by each backend/API and tailored to parse the
+raw data into standardized attributes. This way who cares if it's YouTube or
+Vimeo, access the object the same and share the templates. These attributes
+return an empty string when nothing is available and are therefore
+*template safe*. The current data attributes are:
 
 - ``title``
 - ``author_name``
@@ -186,10 +186,11 @@ into a modal full-size version with attribution. Whatever you want. Since
 Response objects have a standard interface, it doesn't even matter where that
 photo came from. Instagram and TwitPic behave the same.
 
-Note: This concept of provider apathy hinges on the ``Type``. We can only treat
-like types the same or fall back to something generic for all embeds. If the
-provider or the backend reports a Flickr URL as a "link" type, even though we
-know in our hearts it's a "photo", it won't use the photo-specific templates.
+Note: This concept of provider apathy hinges on the ``EmbedType``. We can only
+treat like types the same or fall back to something generic for all embeds.
+If the provider or the backend reports a Flickr URL as a "link" type, even
+though we know in our hearts it's a "photo", it won't use the photo-specific
+templates.
 
 Now for some examples. Since `ArmLayout`_ was designed for this purpose, we'll
 use it. It provides a ``render_model`` template tag that takes an object and a

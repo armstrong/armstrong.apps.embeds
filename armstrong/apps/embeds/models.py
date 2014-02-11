@@ -33,7 +33,7 @@ class Backend(models.Model):
                 help_text="A higher number means higher priority. Used when automatically assigning a backend.")
 
     def __unicode__(self):
-        return "%s (priority: %i; regex: %s)" \
+        return u"%s (priority: %i; regex: %s)" \
             % (self.name, self.priority, self.regex)
 
     def _setup_backend_proxy_methods(self):
@@ -74,7 +74,7 @@ class Provider(models.Model):
         return u"%s" % self.name
 
 
-class Type(models.Model):
+class EmbedType(models.Model):
     """Normalize the embed resource type"""
 
     name = models.CharField(
@@ -99,7 +99,7 @@ class Embed(models.Model, TemplatesByResponseTypeMixin):
 
     # Populated from the actual response
     _response = None
-    type = models.ForeignKey(Type, null=True, blank=True)
+    type = models.ForeignKey(EmbedType, null=True, blank=True)
     provider = models.ForeignKey(Provider, null=True, blank=True)
     response_cache = JSONField()
     response_last_updated = MonitorField(default=None, null=True, blank=True, monitor='response_cache')
