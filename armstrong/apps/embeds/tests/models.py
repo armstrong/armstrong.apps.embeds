@@ -71,6 +71,12 @@ class BackendModelTestCase(TestCase):
         self.assertDictEqual(response._data, wrapped._data)
 
 
+class EmbedTypeTestCase(TestCase):
+    def test_new_object_auto_sets_slug_on_save(self):
+        new = EmbedType.objects.create(name="Test this slug")
+        self.assertEqual(new.slug, "test-this-slug")
+
+
 class EmbedModelTestCase(TestCase):
     fixtures = ['embed_backends']
 

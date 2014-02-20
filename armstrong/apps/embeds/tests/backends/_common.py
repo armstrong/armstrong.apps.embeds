@@ -52,6 +52,7 @@ class CommonResponseTestCaseMixin(object):
         r = self.response_cls({'type': 'TestType'})
         self.assertTrue(isinstance(r.type, EmbedType))
         self.assertEqual(r.type.name, 'TestType')
+        self.assertEqual(r.type.slug, 'testtype')
         self.assertEqual(EmbedType.objects.count(), 1)
 
     def test_creates_provider(self):

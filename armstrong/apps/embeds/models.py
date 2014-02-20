@@ -2,6 +2,7 @@ import re
 import inspect
 
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.core.exceptions import ImproperlyConfigured
 from django_extensions.db.fields.json import JSONField
 from model_utils.fields import MonitorField
@@ -82,9 +83,21 @@ class EmbedType(models.Model):
             unique=True,
             editable=False,
             help_text="Automatically populated by the backends")
+    slug = models.SlugField(
+            max_length=25,
+            unique=True,
+            editable=False,
+            help_text="Used as a folder name in the template lookup.")
 
     def __unicode__(self):
         return u"%s" % self.name
+
+    def save(self, *args, **kwargs):
+        """Auto-assign a slug for new objects"""
+
+        if not self.pk and not self.slug:
+            self.slug = slugify(self.name)
+        super(EmbedType, self).save(*args, **kwargs)
 
 
 class Embed(models.Model, TemplatesByResponseTypeMixin):

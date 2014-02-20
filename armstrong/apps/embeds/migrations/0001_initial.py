@@ -30,6 +30,7 @@ class Migration(SchemaMigration):
         db.create_table(u'embeds_embedtype', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=25)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=25)),
         ))
         db.send_create_signal(u'embeds', ['EmbedType'])
 
@@ -83,7 +84,8 @@ class Migration(SchemaMigration):
         u'embeds.embedtype': {
             'Meta': {'object_name': 'EmbedType'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '25'})
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '25'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '25'})
         },
         u'embeds.provider': {
             'Meta': {'object_name': 'Provider'},
