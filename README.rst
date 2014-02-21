@@ -200,26 +200,26 @@ Apps.Embeds has extended it to also look for type-specific templates.
 
 ``render_model embed_obj 'full'`` for a ``photo`` type will look in this order:
 
-- ``layout/embeds/embed/photo/full.html``
+- ``layout/embeds/embedtype/photo/full.html``
 - ``layout/embeds/embed/full.html``
 
 So to display an Embed object as "preview", just make the following files.
 Each content type can customize what "preview" means. (Maybe a small
 thumbnail or truncated intro text.)
 
-- ``layout/embeds/embed/photo/preview.html``
-- ``layout/embeds/embed/video/preview.html``
-- ``layout/embeds/embed/link/preview.html``
-- ``layout/embeds/embed/rich/preview.html``
+- ``layout/embeds/embedtype/photo/preview.html``
+- ``layout/embeds/embedtype/video/preview.html``
+- ``layout/embeds/embedtype/link/preview.html``
+- ``layout/embeds/embedtype/rich/preview.html``
 - ``layout/embeds/embed/preview.html``
 
 "Lead art" could be another way of displaying an embed. (Perhaps a larger
 image along with title and author attribution.)
 
-- ``layout/embeds/embed/photo/lead_art.html``
-- ``layout/embeds/embed/video/lead_art.html``
-- ``layout/embeds/embed/link/lead_art.html``
-- ``layout/embeds/embed/rich/lead_art.html``
+- ``layout/embeds/embedtype/photo/lead_art.html``
+- ``layout/embeds/embedtype/video/lead_art.html``
+- ``layout/embeds/embedtype/link/lead_art.html``
+- ``layout/embeds/embedtype/rich/lead_art.html``
 - ``layout/embeds/embed/lead_art.html``
 
 Leave out a type-specific template file and ArmLayout will use the more

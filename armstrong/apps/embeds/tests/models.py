@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from armstrong.apps.embeds.models import Embed, Backend, EmbedType, Provider
 from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
-from .arm_layout_mixin import CommonMixin
+from .mixins import CommonMixin
 
 
 def fake_backend_init(obj, *args, **kwargs):
@@ -432,7 +432,9 @@ class EmbedModelLayoutTestCase(CommonMixin, TestCase):
         self.embed = Embed(
             url="http://www.testme.com",
             backend=Backend.objects.get(slug='default'))
-        super(EmbedModelLayoutTestCase, self).setUp()
+        self.tpl_name = "tpl"
+        self.type_name = EmbedType()._meta.object_name.lower()
+        self.type_slug = "photo"
 
     def test_no_backend_uses_fallback_template(self):
         e = Embed(url="http://www.testme.com")
@@ -465,22 +467,20 @@ class EmbedModelLayoutTestCase(CommonMixin, TestCase):
         response = self.embed.get_response()
         response.is_valid = lambda: False
         self.embed.response = response
-        self.embed.type = EmbedType(name=self.type_name)
+        self.embed.type = EmbedType(slug=self.type_slug)
 
         self.assertFalse(self.embed.response.is_valid())
 
-        expected = [
-            '%(base)s/%(app)s/%(model)s/%(type)s/%(tpl)s.html',
-            '%(base)s/%(app)s/%(model)s/%(tpl)s.html']
-        self.compare_templates(self.embed, expected, use_fallback=True)
+        expected = ['%(base)s/%(app)s/%(model)s/%(tpl)s.html']
+        self.compare_templates(self.embed, expected, use_fallback=True, use_type=True)
 
     def test_valid_response_with_a_type(self):
         self.embed.update_response()
-        self.embed.type = EmbedType(name=self.type_name)
+        self.embed.type = EmbedType(slug=self.type_slug)
 
         self.assertTrue(self.embed.response.is_valid())
 
         expected = [
-            '%(base)s/%(app)s/%(model)s/%(type)s/%(tpl)s.html',
+            '%(base)s/%(app)s/%(typemodel)s/%(type)s/%(tpl)s.html',
             '%(base)s/%(app)s/%(model)s/%(tpl)s.html']
-        self.compare_templates(self.embed, expected)
+        self.compare_templates(self.embed, expected, use_type=True)

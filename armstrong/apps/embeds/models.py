@@ -9,7 +9,7 @@ from model_utils.fields import MonitorField
 
 from .backends import get_backend, InvalidResponseError
 from .fields import EmbedURLField, EmbedForeignKey
-from .arm_layout_mixin import TemplatesByResponseTypeMixin
+from .mixins import TemplatesByEmbedTypeMixin
 
 
 class Backend(models.Model):
@@ -100,7 +100,7 @@ class EmbedType(models.Model):
         super(EmbedType, self).save(*args, **kwargs)
 
 
-class Embed(models.Model, TemplatesByResponseTypeMixin):
+class Embed(models.Model, TemplatesByEmbedTypeMixin):
     """
     A URL represented by a Backend that provides the interface for
     interacting with and extracting metadata from the external content.

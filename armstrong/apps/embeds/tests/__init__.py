@@ -2,7 +2,7 @@ from .models import *
 from .backends import *
 from .admin import *
 from .forms import *
-from .arm_layout_mixin import *
+from .mixins import *
 from .templatetags import *
 
 # Silence logging during tests
