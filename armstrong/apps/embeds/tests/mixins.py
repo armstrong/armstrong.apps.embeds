@@ -1,27 +1,11 @@
 import fudge
-from django.db import models
 from django.test import TestCase
 
 from ..mixins import TemplatesByEmbedTypeMixin
+from embeds_support.models import Parent, Child, TypeModel
 
 
-__all__ = ['CommonMixin', 'TemplatesByEmbedTypeTestCase']
-
-
-class TypeModel(models.Model):
-    slug = models.SlugField()
-
-
-class Parent(models.Model, TemplatesByEmbedTypeMixin):
-    response = None
-    type = models.ForeignKey(TypeModel, null=True, blank=True)
-
-
-class Child(Parent):
-    pass
-
-
-class CommonMixin(object):
+class TemplateCompareTestMixin(object):
     def path_opts(self, obj, use_fallback=False, use_type=False):
         return dict(
             base=obj.base_layout_directory,
@@ -38,7 +22,7 @@ class CommonMixin(object):
         self.assertEqual(result, final)
 
 
-class TemplatesByEmbedTypeTestCase(CommonMixin, TestCase):
+class TemplatesByEmbedTypeTestCase(TemplateCompareTestMixin, TestCase):
     def setUp(self):
         self.tpl_name = "tpl"
         self.type_name = TypeModel()._meta.object_name.lower()

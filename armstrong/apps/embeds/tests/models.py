@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from armstrong.apps.embeds.models import Embed, Backend, EmbedType, Provider
 from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
-from .mixins import CommonMixin
+from .mixins import TemplateCompareTestMixin
 
 
 def fake_backend_init(obj, *args, **kwargs):
@@ -422,7 +422,7 @@ class EmbedModelTestCase(TestCase):
         self.assertGreater(e.response_last_updated, dt)
 
 
-class EmbedModelLayoutTestCase(CommonMixin, TestCase):
+class EmbedModelLayoutTestCase(TemplateCompareTestMixin, TestCase):
     fixtures = ['embed_backends']
 
     def setUp(self):
