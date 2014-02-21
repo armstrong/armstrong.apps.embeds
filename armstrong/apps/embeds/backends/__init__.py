@@ -1,11 +1,7 @@
 import pkg_resources
 pkg_resources.declare_namespace(__name__)
 
-from importlib import import_module
 from functools import wraps
-
-
-__all__ = ['InvalidResponseError', 'get_backend', 'proxy']
 
 
 class InvalidResponseError(Exception):
@@ -13,11 +9,17 @@ class InvalidResponseError(Exception):
 
 
 def get_backend(name):
-    module = "%s.%s" % (__package__, str(name).lower())
+    if not name:
+        raise ImportError
+
+    name = str(name).lower()
+    module = "%s.%s" % (__package__, name)
     try:
+        from importlib import import_module
+    except ImportError:  # Python 2.6 support
+        module = __import__(module, globals(), locals(), [name], 0)
+    else:
         module = import_module(module)
-    except KeyError as e:
-        raise ImportError(e)
     return getattr(module, "%sBackend" % name.capitalize())()
 
 

@@ -28,7 +28,7 @@ class ResizeIframeWithoutLXMLTestCase(TestCase):
 
     def test_tag_logs_error(self):
         log_capture = StringIO()
-        log_handler = StreamHandler(stream=log_capture)
+        log_handler = StreamHandler(log_capture)
         logger.addHandler(log_handler)
 
         resize_iframe('value', 200)

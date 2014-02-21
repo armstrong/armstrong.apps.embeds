@@ -202,6 +202,8 @@ class CommonBackendTestCaseMixin(object):
     def _test_garbage_data_should_not_match_a_valid_response(self, url, data):
         """Purposely compare bad data with a real response"""
 
-        bad_data = {key: 'garbage' for key in data.keys()}
+        bad_data = {}
+        for key in data.keys():
+            bad_data[key] = 'garbage'
         with self.assertRaises(AssertionError):
             self._test_response_data(url, bad_data)

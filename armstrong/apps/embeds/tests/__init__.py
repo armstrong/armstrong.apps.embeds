@@ -7,5 +7,13 @@ from .templatetags import *
 
 # Silence logging during tests
 from .. import logger
-from logging import NullHandler
+try:
+    from logging import NullHandler
+except ImportError:  # Python 2.6 support
+    from logging import Handler
+
+    class NullHandler(Handler):
+        def emit(self, record):
+            pass
+
 logger.addHandler(NullHandler())
