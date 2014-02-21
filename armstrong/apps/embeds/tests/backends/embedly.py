@@ -124,9 +124,9 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
             provider_url="http://www.youtube.com/",
             type="video",
             title="The I Files - Investigate Your World",
-            author_name="theifilestv",
+            author_name="The I Files",
             author_url="http://www.youtube.com/user/theifilestv",
-            html='<iframe width="854" height="480" src="http://www.youtube.com/embed/341Z3YW3mO0?feature=oembed" frameborder="0" allowfullscreen></iframe>')
+            html='<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fwww.youtube.com%2Fembed%2F341Z3YW3mO0%3Ffeature%3Doembed&url=http%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D341Z3YW3mO0&image=http%3A%2F%2Fi1.ytimg.com%2Fvi%2F341Z3YW3mO0%2Fhqdefault.jpg&key=internal&type=text%2Fhtml&schema=youtube" width="854" height="480" scrolling="no" frameborder="0" allowfullscreen></iframe>')
 
         self._test_response_data(url, data)
         self._test_garbage_data_should_not_match_a_valid_response(url, data)
@@ -140,7 +140,7 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
             title="Wingsuit Basejumping - The Need 4 Speed: The Art of Flight",
             author_name="Phoenix Fly",
             author_url="http://vimeo.com/phoenixfly",
-            html='<iframe src="http://player.vimeo.com/video/18150336" width="1280" height="720" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>')
+            html='<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F18150336&src_secure=1&url=http%3A%2F%2Fvimeo.com%2F18150336&image=http%3A%2F%2Fb.vimeocdn.com%2Fts%2F117%2F311%2F117311910_1280.jpg&key=internal&type=text%2Fhtml&schema=vimeo" width="1280" height="720" scrolling="no" frameborder="0" allowfullscreen></iframe>')
 
         self._test_response_data(url, data)
         self._test_garbage_data_should_not_match_a_valid_response(url, data)
