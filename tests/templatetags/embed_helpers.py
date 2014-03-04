@@ -5,8 +5,8 @@ from logging import StreamHandler
 from django.template import TemplateSyntaxError
 from django.test import TestCase
 
-from ... import logger
-from ...templatetags.embed_helpers import resize_iframe
+from armstrong.apps.embeds import logger
+from armstrong.apps.embeds.templatetags.embed_helpers import resize_iframe
 
 
 __all__ = ['ResizeIframeWithoutLXMLTestCase', 'ResizeIframeTestCase']

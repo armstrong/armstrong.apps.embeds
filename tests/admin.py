@@ -19,7 +19,7 @@ def return_false(obj):
 
 
 class EmbedAdminBaseTestCase(object):
-    urls = 'armstrong.apps.embeds.tests.embeds_support.urls'
+    urls = 'tests.support.urls'
     fixtures = ['embed_backends.json']
 
     def setUp(self):

@@ -15,4 +15,4 @@ INSTALLED_APPS.extend([
 
 DEBUG = True
 STATIC_URL = "/static/"
-ROOT_URLCONF = 'armstrong.apps.embeds.tests.embeds_support.urls'
+ROOT_URLCONF = 'tests.support.urls'

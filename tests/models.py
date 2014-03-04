@@ -13,7 +13,7 @@ from .mixins import TemplateCompareTestMixin
 def fake_backend_init(obj, *args, **kwargs):
     """Don't error on non-unique slug field"""
 
-    from ..backends import get_backend
+    from armstrong.apps.embeds.backends import get_backend
     super(Backend, obj).__init__(*args, **kwargs)
     obj._backend = get_backend('default')  # patching this part
     obj._setup_backend_proxy_methods()

@@ -6,7 +6,7 @@ from .mixins import *
 from .templatetags import *
 
 # Silence logging during tests
-from .. import logger
+from armstrong.apps.embeds import logger
 try:
     from logging import NullHandler
 except ImportError:  # Python 2.6 support

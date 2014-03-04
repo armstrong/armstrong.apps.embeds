@@ -1,6 +1,6 @@
 from django.db import models
 
-from ...mixins import TemplatesByEmbedTypeMixin
+from armstrong.apps.embeds.mixins import TemplatesByEmbedTypeMixin
 
 
 class TypeModel(models.Model):
