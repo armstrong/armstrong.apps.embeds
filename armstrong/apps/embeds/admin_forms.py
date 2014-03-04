@@ -7,7 +7,7 @@ from django.contrib.formtools.preview import FormPreview
 
 try:
     from django.utils.encoding import force_text
-except ImportError:  # Django 1.3
+except ImportError:  # Django 1.3 # pragma: no cover
     from django.utils.encoding import force_unicode as force_text
 
 from .models import Embed
@@ -180,7 +180,7 @@ class EmbedFormPreview(AdminFormPreview):
         from django.utils.safestring import mark_safe
         from django.forms.forms import NON_FIELD_ERRORS
 
-        if NON_FIELD_ERRORS not in form._errors:
+        if NON_FIELD_ERRORS not in form._errors:  # pragma: no cover
             form._errors[NON_FIELD_ERRORS] = form.error_class()
         form._errors[NON_FIELD_ERRORS].append(mark_safe(msg))
 

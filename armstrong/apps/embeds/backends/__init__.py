@@ -13,9 +13,9 @@ def get_backend(name):
     module = "%s.%s" % (__package__, name)
     try:
         from importlib import import_module
-    except ImportError:  # Python 2.6 support
+    except ImportError:  # Python 2.6 support # pragma: no cover
         module = __import__(module, globals(), locals(), [name], 0)
-    else:
+    else:  # pragma: no cover
         module = import_module(module)
     return getattr(module, "%sBackend" % name.capitalize())()
 

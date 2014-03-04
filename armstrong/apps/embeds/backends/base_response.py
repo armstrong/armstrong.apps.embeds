@@ -19,7 +19,7 @@ class Response(object):
         return not self == other
 
     def is_valid(self):
-        raise NotImplementedError()
+        raise NotImplementedError()  # pragma: no cover
 
     def is_fresh(self):
         return self._fresh

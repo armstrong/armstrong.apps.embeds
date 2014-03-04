@@ -52,7 +52,7 @@ class EmbedForeignKey(SetResponseFieldMixin, models.ForeignKey):
 # If South is installed, create migration rules
 try:
     from south.modelsinspector import add_introspection_rules
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
 else:
     add_introspection_rules([

@@ -57,7 +57,7 @@ class EmbedAdmin(admin.ModelAdmin):
     def get_urls(self):
         try:
             from django.conf.urls import patterns, url
-        except ImportError:  # Django 1.3
+        except ImportError:  # Django 1.3 # pragma: no cover
             from django.conf.urls.defaults import patterns, url
 
         info = self.model._meta.app_label, self.model._meta.module_name

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 try:
     from django.conf.urls import patterns, include
-except ImportError:  # Django 1.3
+except ImportError:  # Django 1.3 # pragma: no cover
     from django.conf.urls.defaults import patterns, include
 
 

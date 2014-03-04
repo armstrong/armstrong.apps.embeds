@@ -9,7 +9,7 @@ from .templatetags import *
 from armstrong.apps.embeds import logger
 try:
     from logging import NullHandler
-except ImportError:  # Python 2.6 support
+except ImportError:  # Python 2.6 support # pragma: no cover
     from logging import Handler
 
     class NullHandler(Handler):

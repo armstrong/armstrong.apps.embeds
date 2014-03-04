@@ -5,7 +5,7 @@ mixin that will let our Embed Model look for templates based on EmbedType.
 """
 try:
     from armstrong.core.arm_layout.mixins import TemplatesByTypeMixin
-except ImportError:
+except ImportError:  # pragma: no cover
     class TemplatesByEmbedTypeMixin(object):
         pass
 else:
