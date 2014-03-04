@@ -1,6 +1,5 @@
 import fudge
 import django
-from django.test import TestCase
 from django.utils import unittest
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Permission
@@ -10,6 +9,7 @@ from armstrong.apps.embeds.forms import EmbedForm
 from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultResponse, DefaultBackend
 from .models import fake_backend_init
+from ._utils import TestCase
 
 __all__ = ['EmbedAdminAddTestCase', 'EmbedAdminChangeTestCase']
 

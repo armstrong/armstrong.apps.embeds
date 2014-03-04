@@ -1,6 +1,5 @@
-from django.test import TestCase
-
 from armstrong.apps.embeds.backends import get_backend
+from .._utils import TestCase
 
 
 class GetBackendTestCase(TestCase):

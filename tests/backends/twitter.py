@@ -1,7 +1,6 @@
-from django.test import TestCase
-
 from armstrong.apps.embeds.backends.twitter import TwitterResponse, TwitterBackend, TWITTER_SCRIPT_TAG
 from ._common import CommonBackendTestCaseMixin, CommonResponseTestCaseMixin
+from .._utils import TestCase
 
 
 __all__ = ['TwitterResponseTestCase', 'TwitterBackendTestCase']

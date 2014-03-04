@@ -1,7 +1,6 @@
-from django.test import TestCase
-
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
 from ._common import CommonBackendTestCaseMixin, CommonResponseTestCaseMixin
+from .._utils import TestCase
 
 
 class DefaultResponseTestCase(CommonResponseTestCaseMixin, TestCase):

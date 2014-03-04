@@ -1,7 +1,6 @@
-from django.test import TestCase
-
 from armstrong.apps.embeds.backends.base_response import Response
 from ._common import CommonResponseTestCaseMixin
+from .._utils import TestCase
 
 
 class ResponseTestCase(CommonResponseTestCaseMixin, TestCase):

@@ -1,9 +1,9 @@
 import fudge
-from django.test import TestCase
 
 from armstrong.apps.embeds.models import Backend
 from armstrong.apps.embeds.forms import EmbedForm
 from .models import fake_backend_init
+from ._utils import TestCase
 
 
 class EmbedFormTestCase(TestCase):

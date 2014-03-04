@@ -1,8 +1,8 @@
 import fudge
-from django.test import TestCase
 
 from armstrong.apps.embeds.mixins import TemplatesByEmbedTypeMixin
 from .support.models import Parent, Child, TypeModel
+from ._utils import TestCase
 
 
 class TemplateCompareTestMixin(object):

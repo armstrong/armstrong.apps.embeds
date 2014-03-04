@@ -3,10 +3,10 @@ import fudge
 from StringIO import StringIO
 from logging import StreamHandler
 from django.template import TemplateSyntaxError
-from django.test import TestCase
 
 from armstrong.apps.embeds import logger
 from armstrong.apps.embeds.templatetags.embed_helpers import resize_iframe
+from .._utils import TestCase
 
 
 __all__ = ['ResizeIframeWithoutLXMLTestCase', 'ResizeIframeTestCase']

@@ -1,13 +1,13 @@
 import fudge
 from datetime import datetime, timedelta
 
-from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 
 from armstrong.apps.embeds.models import Embed, Backend, EmbedType, Provider
 from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultBackend, DefaultResponse
 from .mixins import TemplateCompareTestMixin
+from ._utils import TestCase
 
 
 def fake_backend_init(obj, *args, **kwargs):
