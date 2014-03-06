@@ -76,6 +76,10 @@ class EmbedTypeTestCase(TestCase):
         new = EmbedType.objects.create(name="Test this slug")
         self.assertEqual(new.slug, "test-this-slug")
 
+    def test_new_object_can_manually_set_slug(self):
+        new = EmbedType.objects.create(name="Test this slug", slug="hey-slug")
+        self.assertEqual(new.slug, "hey-slug")
+
 
 class EmbedModelTestCase(TestCase):
     fixtures = ['embed_backends']

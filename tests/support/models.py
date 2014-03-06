@@ -1,6 +1,7 @@
 from django.db import models
 
 from armstrong.apps.embeds.mixins import TemplatesByEmbedTypeMixin
+from armstrong.apps.embeds.fields import EmbedURLField
 
 
 class TypeModel(models.Model):
@@ -14,3 +15,11 @@ class Parent(models.Model, TemplatesByEmbedTypeMixin):
 
 class Child(Parent):
     pass
+
+
+class CustomFieldModel(models.Model):
+    field = EmbedURLField(response_field="response")
+
+    def __init__(self, *args, **kwargs):
+        super(CustomFieldModel, self).__init__(*args, **kwargs)
+        self.response = "testing"

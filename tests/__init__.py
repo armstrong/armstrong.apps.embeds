@@ -1,6 +1,7 @@
 from .models import *
 from .backends import *
 from .admin import *
+from .fields import *
 from .forms import *
 from .mixins import *
 from .templatetags import *
