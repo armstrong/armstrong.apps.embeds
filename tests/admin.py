@@ -11,15 +11,15 @@ from armstrong.apps.embeds.backends.default import DefaultResponse, DefaultBacke
 from .models import fake_backend_init
 from ._utils import TestCase
 
-__all__ = ['EmbedAdminAddTestCase', 'EmbedAdminChangeTestCase']
+__all__ = ['EmbedAdminAddTestCase', 'EmbedAdminChangeTestCase',
+           'BackendAdminTestCase']
 
 
 def return_false(obj):
     return False
 
 
-class EmbedAdminBaseTestCase(object):
-    urls = 'tests.support.urls'
+class CommonAdminBaseTestCase(object):
     fixtures = ['embed_backends.json']
 
     def setUp(self):
@@ -32,8 +32,57 @@ class EmbedAdminBaseTestCase(object):
         self.user.save()
 
         # login
-        self.assertTrue(self.client.login(username=username, password=pw),
+        self.assertTrue(
+            self.client.login(username=username, password=pw),
             "Logging in failed.")
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_admin_site_requires_login(self):
+        self.client.logout()
+        r = self.client.get(self.changelist_url)
+        self.assertContains(r, 'Log in')
+        self.assertTemplateUsed(r, 'admin/login.html')
+
+    def test_admin_site_requires_permission(self):
+        self.user.is_superuser = False
+        self.user.save()
+
+        r = self.client.get(self.changelist_url)
+        self.assertEqual(r.status_code, 403)
+
+
+class BackendAdminTestCase(CommonAdminBaseTestCase, TestCase):
+    def setUp(self):
+        super(BackendAdminTestCase, self).setUp()
+        self.add_url = reverse('admin:embeds_backend_add')
+        self.changelist_url = reverse('admin:embeds_backend_changelist')
+        self.change_url = reverse('admin:embeds_backend_change', args=[1])
+
+    def test_add_page_redirects_to_changelist(self):
+        r = self.client.get(self.add_url)
+        self.assertRedirects(r, self.changelist_url)
+
+    def test_add_page_displays_message(self):
+        msg = 'New Embed backends cannot be added via the Admin'
+        r = self.client.get(self.add_url, follow=True)
+        self.assertContains(r, msg)
+
+    def test_changelist_page_doesnt_have_add_button(self):
+        r = self.client.get(self.changelist_url)
+        self.assertTemplateUsed(r, 'embeds/admin/change_list_template.html')
+        self.assertNotContains(r, 'href="/admin/embeds/backend/add/"')
+
+    def test_change_page_description_field_uses_textfield(self):
+        regex = r'<textarea\s[^>]*id="id_description"\s?[^>]*>'
+        r = self.client.get(self.change_url)
+        self.assertRegexpMatches(r.content, regex)
+
+
+class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
+    def setUp(self):
+        super(EmbedAdminBaseTestCase, self).setUp()
 
         # Prepare database contents
         Backend.objects.exclude(slug="default").delete()
@@ -47,9 +96,6 @@ class EmbedAdminBaseTestCase(object):
         self.add_url = reverse('admin:embeds_embed_add')
         self.changelist_url = reverse('admin:embeds_embed_changelist')
         self.valid_data = dict(url='http://www.fakeurl.com/', backend='')
-
-    def tearDown(self):
-        self.client.logout()
 
     def _on_step2(self, test_func, response):
         getattr(self, test_func)(response.context['form'].is_valid())
@@ -80,19 +126,6 @@ class EmbedAdminBaseTestCase(object):
             "You can still save this Embed but it won't be very useful without response data.")
         self.assertContains(response,
             "Invalid response from the Backend API")
-
-    def test_admin_site_requires_login(self):
-        self.client.logout()
-        r = self.client.get(self.changelist_url)
-        self.assertContains(r, 'Log in')
-        self.assertTemplateUsed(r, 'admin/login.html')
-
-    def test_admin_site_requires_permission(self):
-        self.user.is_superuser = False
-        self.user.save()
-
-        r = self.client.get(self.changelist_url)
-        self.assertEqual(r.status_code, 403)
 
     def test_empty_url_fails(self):
         data = dict(url='')
