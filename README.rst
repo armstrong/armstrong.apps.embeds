@@ -6,7 +6,7 @@ embeddable content in a database brings the typical benefits of relational
 data. Programmable backends allow more flexible use of the content beyond
 the one-trick pony of the standard "<iframe>" copy-paste embed code.
 
-Integrating Apps.Embeds into your site will require some work. Mostly because
+Integrating AppsEmbeds into your site will require some work. Mostly because
 this package doesn't make assumptions for *how* you'll be using these
 external URLs. Maybe you just want to track references to embedded content,
 maybe it's the caching that's interesting or programmatically accessing
@@ -15,7 +15,7 @@ in your way, but you'll have to customize code and/or templates.
 
 This is a stand alone component; it *does not* require any other pieces of the
 Armstrong family. However, it does play nicely with `ArmLayout`_. If you use
-ArmLayout already, Apps.Embeds is ready to go. Much of the power of Apps.Embeds
+ArmLayout already, AppsEmbeds is ready to go. Much of the power of AppsEmbeds
 comes from templating so if you use that feature and aren't already using
 ArmLayout, it's worth considering.
 
@@ -56,6 +56,8 @@ Features
 
 Installation & Configuration
 ----------------------------
+Supports Django 1.3, 1.4, 1.5, 1.6 on Python 2.6 and 2.7.
+
 #. ``pip install armstrong.apps.embeds``
 
 #. [optional] ``pip install lxml`` if you plan on using the
@@ -95,7 +97,7 @@ fifth ``error`` type (and that's okay).
 third-party APIs to retrieve response data for the external content URLs.
 It's easiest to initially load them from the fixture data file but feel free
 to customize them as you will. Just don't change the ``slug``, which is how
-the model maps to its code backend. ``regex`` and ``priority`` are designed
+the model maps to its code back-end. ``regex`` and ``priority`` are designed
 to change. That's how you'll customize the auto-assignment behavior. The
 Embedly backend will handle YouTube sure, but say you've written a more
 targeted YouTube-specific backend--add it to the database with a selective
@@ -196,7 +198,7 @@ Now for some examples. Since `ArmLayout`_ was designed for this purpose, we'll
 use it. It provides a ``render_model`` template tag that takes an object and a
 template name then looks in a hierarchy from most-specific to least for that
 template. ArmLayout uses ``get_layout_template_name()`` for the lookup and
-Apps.Embeds has extended it to also look for type-specific templates.
+AppsEmbeds has extended it to also look for type-specific templates.
 
 ``render_model embed_obj 'full'`` for a ``photo`` type will look in this order:
 
@@ -267,7 +269,7 @@ It's how we use and integrate that external content into our own works that
 matters here. Armstrong is a platform for newsrooms and content publishers.
 The typical situation is one where reporters and editors write, draft, proof
 and publish. Content has eyes on it and doesn't get published until it's
-finished. Apps.Embeds is just the same. A general assumption is that some
+finished. AppsEmbeds is just the same. A general assumption is that some
 human is looking at the embed--maybe not the raw response data--but certainly
 the end result of how it looks (i.e. how a template renders it). If it looks
 wrong, it doesn't get published.
@@ -280,8 +282,8 @@ hopefully someone is looking at the content and will notice.
 
 Many APIs provide customization for the responses they provide. They may allow
 you to specify maxwidth and maxheight, alignments for text or localization,
-callbacks, transparency modes or word length truncation. Apps.Embeds doesn't
-do any of that primarily because it can't make those assumptions. Apps.Embeds
+callbacks, transparency modes or word length truncation. AppsEmbeds doesn't
+do any of that primarily because it can't make those assumptions. AppsEmbeds
 gets you the raw data in its default form whatever that may be and follows
 the "customize after" approach.
 
@@ -291,7 +293,7 @@ content. It wouldn't do to set a maxwidth=200 on the API call, cache that
 and then be stuck for the larger size use case.
 
 Ultimately, API use can be a finicky thing. The best course of action within
-the Apps.Embeds paradigm is to customize or create a backend and/or response
+the AppsEmbeds paradigm is to customize or create a backend and/or response
 class fitting the API you use and the parameters you may want to query with.
 Have a better idea or an awesome backend? Please make a Pull Request!
 
@@ -305,32 +307,33 @@ These two YouTube links will make two separate Embed objects::
 
 Contributing
 ------------
-* Create something awesome--make the code better, create or customize a
-  Backend, whatever.
-* `Fork it`_
-* Create a topic branch to house your changes
-* Get all of your commits in the new topic branch
-* Submit a `Pull Request`_
+Development occurs on Github. Participation is welcome!
 
-.. _Pull Request: https://help.github.com/articles/using-pull-requests
-.. _Fork it: https://help.github.com/articles/fork-a-repo
+* Found a bug? File it on `Github Issues`_. Include as much detail as you
+  can and make sure to list the specific component since we use a centralized,
+  project-wide issue tracker.
+* Testing? ``pip install tox`` and run ``tox``
+* Have code to submit? Fork the repo, consolidate your changes on a topic
+  branch and create a `pull request`_. The `armstrong.dev`_ package provides
+  tools for testing, coverage and South migration as well as making it very
+  easy to run a full Django environment with this component's settings.
+* Questions, need help, discussion? Use our `Google Group`_ mailing list.
+
+.. _Github Issues: https://github.com/armstrong/armstrong/issues
+.. _pull request: http://help.github.com/pull-requests/
+.. _armstrong.dev: https://github.com/armstrong/armstrong.dev
+.. _Google Group: http://groups.google.com/group/armstrongcms
 
 
 State of Project
 ----------------
-Armstrong is an open-source news platform that is freely available to any
-organization.  It is the result of a collaboration between the `Texas Tribune`_
+`Armstrong`_ is an open-source news platform that is freely available to any
+organization. It is the result of a collaboration between the `Texas Tribune`_
 and `The Center for Investigative Reporting`_ and a grant from the
-`John S. and James L. Knight Foundation`_.
-
-To follow development, be sure to join the `Google Group`_.
-
-``armstrong.apps.embeds`` is part of the `Armstrong`_ project.  You're
-probably looking for that.
-
+`John S. and James L. Knight Foundation`_. Armstrong is available as a
+complete bundle and as individual, stand-alone components.
 
 .. _Armstrong: http://www.armstrongcms.org/
+.. _Texas Tribune: http://www.texastribune.org/
 .. _The Center for Investigative Reporting: http://cironline.org/
 .. _John S. and James L. Knight Foundation: http://www.knightfoundation.org/
-.. _Texas Tribune: http://www.texastribune.org/
-.. _Google Group: http://groups.google.com/group/armstrongcms
