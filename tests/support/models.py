@@ -18,7 +18,7 @@ class Child(Parent):
 
 
 class CustomFieldModel(models.Model):
-    field = EmbedURLField(response_field="response")
+    field = EmbedURLField(response_attr="response")
 
     def __init__(self, *args, **kwargs):
         super(CustomFieldModel, self).__init__(*args, **kwargs)

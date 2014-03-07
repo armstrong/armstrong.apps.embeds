@@ -37,8 +37,8 @@ class Migration(SchemaMigration):
         # Adding model 'Embed'
         db.create_table(u'embeds_embed', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('url', self.gf('armstrong.apps.embeds.fields.EmbedURLField')(response_field='response', max_length=200, unique=True)),
-            ('backend', self.gf('armstrong.apps.embeds.fields.EmbedForeignKey')(to=orm['embeds.Backend'], response_field='response', blank=True)),
+            ('url', self.gf('armstrong.apps.embeds.fields.EmbedURLField')(response_attr='response', max_length=200, unique=True)),
+            ('backend', self.gf('armstrong.apps.embeds.fields.EmbedForeignKey')(to=orm['embeds.Backend'], response_attr='response', blank=True)),
             ('type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['embeds.EmbedType'], null=True, blank=True)),
             ('provider', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['embeds.Provider'], null=True, blank=True)),
             ('response_cache', self.gf('django.db.models.fields.TextField')(default='{}')),
@@ -73,13 +73,13 @@ class Migration(SchemaMigration):
         },
         u'embeds.embed': {
             'Meta': {'object_name': 'Embed'},
-            'backend': ('armstrong.apps.embeds.fields.EmbedForeignKey', [], {'to': u"orm['embeds.Backend']", 'response_field': "'response'", 'blank': 'True'}),
+            'backend': ('armstrong.apps.embeds.fields.EmbedForeignKey', [], {'to': u"orm['embeds.Backend']", 'response_attr': "'response'", 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'provider': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['embeds.Provider']", 'null': 'True', 'blank': 'True'}),
             'response_cache': ('django.db.models.fields.TextField', [], {'default': "'{}'"}),
             'response_last_updated': ('model_utils.fields.MonitorField', [], {'default': 'None', 'null': 'True', 'monitor': "'response_cache'", 'blank': 'True'}),
             'type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['embeds.EmbedType']", 'null': 'True', 'blank': 'True'}),
-            'url': ('armstrong.apps.embeds.fields.EmbedURLField', [], {'response_field': "'response'", 'max_length': '200', 'unique': 'True'})
+            'url': ('armstrong.apps.embeds.fields.EmbedURLField', [], {'response_attr': "'response'", 'max_length': '200', 'unique': 'True'})
         },
         u'embeds.embedtype': {
             'Meta': {'object_name': 'EmbedType'},

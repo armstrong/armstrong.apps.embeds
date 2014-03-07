@@ -7,7 +7,7 @@ class ResetResponseMixin(object):
     """Clear the response data if this field changes"""
 
     def __init__(self, *args, **kwargs):
-        self.response_field = kwargs.pop('response_field')
+        self.response_attr = kwargs.pop('response_attr')
         super(ResetResponseMixin, self).__init__(*args, **kwargs)
 
     def __set__(self, instance, value):
@@ -17,20 +17,20 @@ class ResetResponseMixin(object):
         super(ResetResponseMixin, self).__set__(instance, value)
 
         if previous and previous != value:
-            delattr(instance, self.response_field)
+            delattr(instance, self.response_attr)
 
 
 class SetResponseFieldMixin(object):
     def __init__(self, *args, **kwargs):
-        self.response_field = kwargs.pop('response_field', None)
-        if not self.response_field:
-            raise TypeError(
-                '%s requires a "response_field" argument' % self.__class__.__name__)
+        self.response_attr = kwargs.pop('response_attr', None)
+        if not self.response_attr:
+            raise TypeError('%s requires a "response_attr" argument'
+                            % self.__class__.__name__)
         super(SetResponseFieldMixin, self).__init__(*args, **kwargs)
 
     def contribute_to_class(self, cls, name):
         super(SetResponseFieldMixin, self).contribute_to_class(cls, name)
-        setattr(cls, name, self.descriptor_class(self, response_field=self.response_field))
+        setattr(cls, name, self.descriptor_class(self, response_attr=self.response_attr))
 
 
 class ResetResponseDescriptor(ResetResponseMixin, Creator):
@@ -59,7 +59,7 @@ else:
         (
             [EmbedURLField, EmbedForeignKey],
             [],
-            dict(response_field=("response_field", {}))
+            dict(response_attr=("response_attr", {}))
         )
     ], [
         "^armstrong\.apps\.embeds\.fields\.EmbedURLField",

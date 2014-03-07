@@ -106,8 +106,8 @@ class Embed(models.Model, TemplatesByEmbedTypeMixin):
     interacting with and extracting metadata from the external content.
 
     """
-    url = EmbedURLField(unique=True, response_field='response')
-    backend = EmbedForeignKey(Backend, blank=True, response_field='response',
+    url = EmbedURLField(unique=True, response_attr='response')
+    backend = EmbedForeignKey(Backend, blank=True, response_attr='response',
         help_text="The most appropriate Backend will auto-assign if not explicitly provided")
 
     # Populated from the actual response

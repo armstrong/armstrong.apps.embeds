@@ -14,8 +14,8 @@ class CustomFieldTestCase(TestCase):
     except for raising the TypeError.
 
     """
-    def test_field_requires_response_field_kwarg(self):
-        with self.assertRaisesRegexp(TypeError, 'requires a "response_field"'):
+    def test_field_requires_response_attr_kwarg(self):
+        with self.assertRaisesRegexp(TypeError, 'requires a "response_attr"'):
             class Model(models.Model):
                 broken = EmbedURLField()
 
