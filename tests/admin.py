@@ -65,7 +65,7 @@ class BackendAdminTestCase(CommonAdminBaseTestCase, TestCase):
         self.assertRedirects(r, self.changelist_url)
 
     def test_add_page_displays_message(self):
-        msg = 'New Embed backends cannot be added via the Admin'
+        msg = 'New Backends cannot be added via the Admin'
         r = self.client.get(self.add_url, follow=True)
         self.assertContains(r, msg)
 
@@ -120,11 +120,14 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
         return submit, r
 
     def invalid_response_strings(self, response):
-        self.assertContains(response,
+        self.assertContains(
+            response,
             "The response for this Embed is invalid. Here's the error data:")
-        self.assertContains(response,
+        self.assertContains(
+            response,
             "You can still save this Embed but it won't be very useful without response data.")
-        self.assertContains(response,
+        self.assertContains(
+            response,
             "Invalid response from the Backend API")
 
     def test_empty_url_fails(self):
@@ -149,7 +152,8 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
 
     def test_choosen_backend_doesnt_auto_assign(self):
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            Backend.objects.create(name='b1', code_path='b1', regex='.*', priority=5)
+            Backend.objects.create(
+                name='b1', code_path='b1', regex='.*', priority=5)
 
             data = dict(url='www.fakeurl.com', backend=1)
             r = self.client.post(self.url, data)

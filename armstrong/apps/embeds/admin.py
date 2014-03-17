@@ -26,7 +26,8 @@ class BackendAdmin(admin.ModelAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         """Change the form widget for the description field"""
 
-        formfield = super(BackendAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        formfield = super(BackendAdmin, self)\
+            .formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'description':
             formfield.widget = widgets.Textarea(attrs=formfield.widget.attrs)
         return formfield
@@ -34,12 +35,13 @@ class BackendAdmin(admin.ModelAdmin):
     def add_view(self, request, *args, **kwargs):
         """Override the Add view with messaging and a redirect"""
 
-        messages.error(request, 'New Embed backends cannot be added via the Admin.')
+        messages.error(request, 'New Backends cannot be added via the Admin.')
         return redirect('admin:embeds_backend_changelist')
 
 
 class EmbedAdmin(admin.ModelAdmin):
-    list_display = ['url', 'title', 'backend_name', 'provider', 'type', 'cached']
+    list_display = ['url', 'title', 'backend_name',
+                    'provider', 'type', 'cached']
     list_filter = ['backend__name', 'provider', 'type']
     search_fields = ['url', 'response_cache']
 

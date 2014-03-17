@@ -79,11 +79,15 @@ class EmbedlyBackend(object):
             #PY3 use PEP 3134 exception chaining
             import sys
             exc_cls, msg, trace = sys.exc_info()
-            raise InvalidResponseError, "%s: %s" % (exc_cls.__name__, msg), trace
+            raise (InvalidResponseError,
+                   "%s: %s" % (exc_cls.__name__, msg),
+                   trace)
 
-        response = self.wrap_response_data(getattr(response, 'data', None), fresh=True)
+        response = self.wrap_response_data(
+            getattr(response, 'data', None), fresh=True)
         if not response.is_valid():
-            logger.warn("%s error: %s" % (type(response).__name__, response._data))
+            logger.warn("%s error: %s" %
+                        (type(response).__name__, response._data))
         return response
 
     @proxy

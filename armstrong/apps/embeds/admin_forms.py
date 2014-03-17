@@ -62,7 +62,7 @@ class AdminFormPreview(FormPreview):
                 raise Http404(
                     _('%(name)s object with primary key %(key)r does not exist.') %
                     {'name': force_text(self.model._meta.verbose_name),
-                    'key': escape(self.object_id)})
+                     'key': escape(self.object_id)})
 
             from django.core.exceptions import PermissionDenied
             if self.action == "add" and not self.admin.has_add_permission(request):

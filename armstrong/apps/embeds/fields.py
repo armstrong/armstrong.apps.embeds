@@ -30,7 +30,8 @@ class SetResponseFieldMixin(object):
 
     def contribute_to_class(self, cls, name):
         super(SetResponseFieldMixin, self).contribute_to_class(cls, name)
-        setattr(cls, name, self.descriptor_class(self, response_attr=self.response_attr))
+        setattr(cls, name,
+                self.descriptor_class(self, response_attr=self.response_attr))
 
 
 class ResetResponseDescriptor(ResetResponseMixin, Creator):

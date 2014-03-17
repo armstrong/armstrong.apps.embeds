@@ -22,27 +22,31 @@ class Backend(models.Model):
     """
     name = models.CharField(max_length=50)
     code_path = models.CharField(
-                unique=True,
-                max_length=100,
-                help_text="Full Python path for the actual Backend code.")
+        unique=True,
+        max_length=100,
+        help_text="Full Python path for the actual Backend code.")
     description = models.CharField(max_length=255, null=True, blank=True)
     regex = models.CharField(
-                max_length=100,
-                help_text="Used to match a URL when automatically assigning backends.")
+        max_length=100,
+        help_text="Used to match a URL when automatically assigning backends.")
     priority = models.PositiveSmallIntegerField(
-                default=1,
-                help_text="A higher number means higher priority. Used when automatically assigning a backend.")
+        default=1,
+        help_text="""A higher number means higher priority.
+                  Used when automatically assigning a backend.""")
 
     def __unicode__(self):
         return u"%s (priority: %i; regex: %s)" \
             % (self.name, self.priority, self.regex)
 
     def _setup_backend_proxy_methods(self):
-        """Ease of use: passthrough methods to the backend API for transparency to the calling code"""
+        """
+        Ease of use: passthrough methods to the backend API for transparency
+        to the calling code
 
+        """
         self._proxy_to_backend = []
-        for name, method in inspect.getmembers(self._backend, inspect.ismethod):
-            if hasattr(method, 'proxy') and method.proxy:
+        for name, func in inspect.getmembers(self._backend, inspect.ismethod):
+            if hasattr(func, 'proxy') and func.proxy:
                 self._proxy_to_backend.append(name)
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +56,8 @@ class Backend(models.Model):
         try:
             self._backend = get_backend(self.code_path)
         except ImportError as e:
-            raise ImproperlyConfigured('Backends must have a code module: %s' % e)
+            raise ImproperlyConfigured(
+                'Backends must have a code module: %s' % e)
 
         self._setup_backend_proxy_methods()
 
@@ -66,10 +71,10 @@ class Provider(models.Model):
     """Normalize the embed resource provider"""
 
     name = models.CharField(
-            max_length=50,
-            unique=True,
-            editable=False,
-            help_text="Automatically populated by the backends")
+        max_length=50,
+        unique=True,
+        editable=False,
+        help_text="Automatically populated by the backends")
 
     def __unicode__(self):
         return u"%s" % self.name
@@ -79,15 +84,15 @@ class EmbedType(models.Model):
     """Normalize the embed resource type"""
 
     name = models.CharField(
-            max_length=25,
-            unique=True,
-            editable=False,
-            help_text="Automatically populated by the backends")
+        max_length=25,
+        unique=True,
+        editable=False,
+        help_text="Automatically populated by the backends")
     slug = models.SlugField(
-            max_length=25,
-            unique=True,
-            editable=False,
-            help_text="Used as a folder name in the template lookup.")
+        max_length=25,
+        unique=True,
+        editable=False,
+        help_text="Used as a folder name in the template lookup.")
 
     def __unicode__(self):
         return u"%s" % self.name
@@ -107,15 +112,20 @@ class Embed(models.Model, TemplatesByEmbedTypeMixin):
 
     """
     url = EmbedURLField(unique=True, response_attr='response')
-    backend = EmbedForeignKey(Backend, blank=True, response_attr='response',
-        help_text="The most appropriate Backend will auto-assign if not explicitly provided")
+    backend = EmbedForeignKey(
+        Backend,
+        blank=True,
+        response_attr='response',
+        help_text="""The most appropriate Backend will auto-assign if
+                  not explicitly provided""")
 
     # Populated from the actual response
     _response = None
     type = models.ForeignKey(EmbedType, null=True, blank=True)
     provider = models.ForeignKey(Provider, null=True, blank=True)
     response_cache = JSONField()
-    response_last_updated = MonitorField(default=None, null=True, blank=True, monitor='response_cache')
+    response_last_updated = MonitorField(
+        default=None, null=True, blank=True, monitor='response_cache')
 
     @property
     def response(self):
@@ -174,9 +184,9 @@ class Embed(models.Model, TemplatesByEmbedTypeMixin):
         if it's valid and different from what we already have.
 
         """
-        new_response = self.get_response()
-        if new_response and new_response.is_valid() and new_response != self.response:
-            self.response = new_response
+        new = self.get_response()
+        if new and new.is_valid() and new != self.response:
+            self.response = new
             return True
         return False
 
@@ -188,13 +198,14 @@ class Embed(models.Model, TemplatesByEmbedTypeMixin):
         super(Embed, self).__init__(*args, **kwargs)
 
         if self.response_cache:
-            self.response = self.backend.wrap_response_data(self.response_cache)
+            self.response = self.backend.wrap_response_data(
+                self.response_cache)
 
     def save(self, *args, **kwargs):
-        """Auto-assign a Backend and try to load response data for new Embeds"""
+        """Auto-assign a Backend and try to load a response for new Embeds"""
 
         if not self.pk:
-            # Due to the nature of ForeignKeys, use hasattr() instead of getattr()
+            # Due to the nature of ForeignKeys, use hasattr instead of getattr
             if not hasattr(self, 'backend'):
                 self.backend = self.choose_backend()
 

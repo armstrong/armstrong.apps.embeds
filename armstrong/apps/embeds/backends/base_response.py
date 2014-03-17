@@ -43,9 +43,9 @@ class Response(object):
         return self._provider
 
     #
-    # Provide a standard interface for attributes we expect in the response
-    # return an empty string by default to prevent "None" leaking in the template
-    # though `data` is available, the goal is to avoid accessing it
+    # Provide a standard interface for attributes we expect in the response.
+    # Return an empty string by default to prevent "None" leaking in the
+    # template. Though `data` is available, the goal is to avoid accessing it.
     #
     def _get(self, attr):
         return self._data.get(attr, '')

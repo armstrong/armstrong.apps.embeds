@@ -29,7 +29,8 @@ def resize_iframe(value, new_width):
         try:
             orig_width = int(iframe.attrib['width'])
         except (ValueError, KeyError):
-            continue  # don't set the width if the value isn't present or isn't a number
+            # don't set the width if the value isn't present or isn't a number
+            continue
 
         if new_width < orig_width:
             scaler = new_width / float(iframe.attrib['width'])
@@ -38,7 +39,8 @@ def resize_iframe(value, new_width):
             try:
                 int(iframe.attrib['height'])
             except (ValueError, KeyError):
-                pass  # likewise, don't set height if the value isn't present or isn't a number
+                # don't set height if the value isn't present or isn't a number
+                pass
             else:
                 new_height = float(iframe.attrib['height']) * scaler
                 iframe.attrib['height'] = str(int(new_height))

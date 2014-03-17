@@ -1,5 +1,4 @@
 import inspect
-from functools import wraps
 from abc import ABCMeta, abstractproperty
 
 from armstrong.apps.embeds.models import Provider, EmbedType
@@ -16,13 +15,19 @@ class CommonResponseTestCaseMixin(object):
         self.assertEqual(self.response_cls(), self.response_cls())
 
     def test_responses_are_equal(self):
-        self.assertEqual(self.response_cls({'data': 1}), self.response_cls({'data': 1}))
+        self.assertEqual(
+            self.response_cls({'data': 1}),
+            self.response_cls({'data': 1}))
 
     def test_empty_response_is_not_equal(self):
-        self.assertNotEqual(self.response_cls({'data': 1}), self.response_cls())
+        self.assertNotEqual(
+            self.response_cls({'data': 1}),
+            self.response_cls())
 
     def test_responses_are_not_equal(self):
-        self.assertNotEqual(self.response_cls({'data': 1}), self.response_cls({'data': 2}))
+        self.assertNotEqual(
+            self.response_cls({'data': 1}),
+            self.response_cls({'data': 2}))
 
     def test_response_not_equal_to_nonresponse(self):
         self.assertNotEqual(self.response_cls({'data': 1}), 'string')
@@ -183,7 +188,8 @@ class CommonBackendTestCaseMixin(object):
         for key, value in inspect.getmembers(expected_response):
             if not key.startswith('_') and value and not inspect.ismethod(value):
                 response_value = getattr(response, key)
-                error_msg = "Failed on <%s>: <%s> != <%s>" % (key, value, response_value)
+                error_msg = "Failed on <%s>: <%s> != <%s>" \
+                            % (key, value, response_value)
                 self.assertEqual(value, response_value, error_msg)
 
     def _test_garbage_data_should_not_match_a_valid_response(self, url, data):
