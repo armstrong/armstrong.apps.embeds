@@ -82,6 +82,9 @@ Supports Django 1.3, 1.4, 1.5, 1.6 on Python 2.6 and 2.7.
   ``EMBEDLY_KEY = 'your key'``
 
 
+**Logging:** This component emits logging statements using the
+``armstrong.apps.embeds`` logger.
+
 .. _South: http://south.aeracode.org/
 
 

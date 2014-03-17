@@ -1,7 +1,8 @@
+include LICENSE
 include MANIFEST.in
 include README.rst
 include CHANGES.rst
 include package.json
 recursive-include armstrong/apps/embeds/fixtures *
 recursive-include armstrong/apps/embeds/templates *
-prune build/*
+prune tests

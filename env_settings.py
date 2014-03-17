@@ -13,6 +13,5 @@ INSTALLED_APPS.extend([
     'django.contrib.sessions',
     'django.contrib.formtools'])
 
-DEBUG = True
 STATIC_URL = "/static/"
 ROOT_URLCONF = 'tests.support.urls'

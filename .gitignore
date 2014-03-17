@@ -2,6 +2,7 @@
 *~
 *.swp
 *.egg-info
+.tox/
 coverage*/
 build/
 mydatabase
