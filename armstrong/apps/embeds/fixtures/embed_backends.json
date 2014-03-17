@@ -7,7 +7,7 @@
       "priority": 0,
       "description": "The bare minimum backend that essentially just reports back the URL",
       "name": "default",
-      "slug": "default"
+      "code_path": "armstrong.apps.embeds.backends.default.DefaultBackend"
     }
   },
   {
@@ -18,7 +18,7 @@
       "priority": 1,
       "description": "Embedly API wrapper that works with free or paid accounts. Requires an API key.",
       "name": "Embedly",
-      "slug": "embedly"
+      "code_path": "armstrong.apps.embeds.backends.embedly.EmbedlyBackend"
     }
   },
   {
@@ -29,7 +29,7 @@
       "priority": 2,
       "description": "Simple Twitter tag wrapper. Does not use the Twitter API and cannot provide any metadata.",
       "name": "Twitter Non-API",
-      "slug": "twitter"
+      "code_path": "armstrong.apps.embeds.backends.twitter.TwitterBackend"
     }
   }
 ]

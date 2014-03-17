@@ -10,10 +10,10 @@ from .admin_forms import EmbedFormPreview
 
 class BackendAdmin(admin.ModelAdmin):
     list_display = ['name', 'regex', 'priority']
-    readonly_fields = ['slug']
+    readonly_fields = ['code_path']
     fieldsets = (
         ('Information', {
-            'fields': ('name', 'slug', 'description')
+            'fields': ('name', 'code_path', 'description')
         }),
         ('Matching Behavior', {
             'fields': ('regex', 'priority')

@@ -11,11 +11,14 @@ from ._utils import TestCase
 
 
 def fake_backend_init(obj, *args, **kwargs):
-    """Don't error on non-unique slug field"""
+    """Don't error on non-unique code_path field"""
 
     from armstrong.apps.embeds.backends import get_backend
     super(Backend, obj).__init__(*args, **kwargs)
-    obj._backend = get_backend('default')  # patching this part
+
+    # patching this part
+    obj._backend = get_backend(
+        'armstrong.apps.embeds.backends.default.DefaultBackend')
     obj._setup_backend_proxy_methods()
 
 
@@ -25,15 +28,16 @@ class BackendModelTestCase(TestCase):
         self.data = dict(url=self.url)
         self.backend_cls = DefaultBackend
         self.response_cls = DefaultResponse
-        self.backend = Backend(slug='default')
+        self.backend = Backend(
+            code_path='armstrong.apps.embeds.backends.default.DefaultBackend')
 
     def test_empty_model_fails(self):
         with self.assertRaises(ImproperlyConfigured):
             Backend()
 
-    def test_fake_model_slug_fails(self):
+    def test_fake_model_code_path_fails(self):
         with self.assertRaises(ImproperlyConfigured):
-            Backend(slug='fake')
+            Backend(code_path='fake')
 
     def test_model_inits_properly(self):
         self.assertTrue(isinstance(self.backend._backend, self.backend_cls))
@@ -86,11 +90,11 @@ class EmbedModelTestCase(TestCase):
 
     def setUp(self):
         # Remove everything but the default Backend
-        Backend.objects.exclude(slug="default").delete()
+        Backend.objects.exclude(name="default").delete()
 
         self.url = "http://www.testme.com"
         self.new_url = "http://newurl.com"
-        self.backend = Backend.objects.get(slug='default')
+        self.backend = Backend.objects.get(name='default')
         self.backend_cls = DefaultBackend
         self.response_cls = DefaultResponse
         self.response = self.response_cls(
@@ -160,16 +164,19 @@ class EmbedModelTestCase(TestCase):
         e = Embed(url=self.url)
 
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            b1 = Backend.objects.create(name='b1', slug='b1', regex='.*', priority=5)
+            b1 = Backend.objects.create(
+                name='b1', code_path='b1', regex='.*', priority=5)
             self.assertEqual(e.choose_backend(), b1)
-            b2 = Backend.objects.create(name='b2', slug='b2', regex='.*', priority=6)
+            b2 = Backend.objects.create(
+                name='b2', code_path='b2', regex='.*', priority=6)
             self.assertEqual(e.choose_backend(), b2)
 
     def test_choose_backend_skips_non_matching_regex(self):
         e = Embed(url=self.url)
 
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            Backend.objects.create(name='b1', slug='b1', regex='thiswontmatch', priority=5)
+            Backend.objects.create(
+                name='b1', code_path='b1', regex='thiswontmatch', priority=5)
             self.assertEqual(e.choose_backend(), self.backend)
 
     def test_choose_backend_returns_none_without_matching_regex(self):
@@ -389,7 +396,7 @@ class EmbedModelTestCase(TestCase):
         self.assertIsNotNone(e.response)
 
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            e.backend = Backend(name='new', slug='new', regex='.*')
+            e.backend = Backend(name='new', code_path='new', regex='.*')
 
         self.expect_empty_response_data(e)
 
@@ -431,11 +438,11 @@ class EmbedModelLayoutTestCase(TemplateCompareTestMixin, TestCase):
 
     def setUp(self):
         # Remove everything but the default Backend
-        Backend.objects.exclude(slug="default").delete()
+        Backend.objects.exclude(name="default").delete()
 
         self.embed = Embed(
             url="http://www.testme.com",
-            backend=Backend.objects.get(slug='default'))
+            backend=Backend.objects.get(name='default'))
         self.tpl_name = "tpl"
         self.type_name = EmbedType()._meta.object_name.lower()
         self.type_slug = "photo"

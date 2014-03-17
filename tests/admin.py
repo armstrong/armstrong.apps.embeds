@@ -85,8 +85,8 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
         super(EmbedAdminBaseTestCase, self).setUp()
 
         # Prepare database contents
-        Backend.objects.exclude(slug="default").delete()
-        self.backend = Backend.objects.get(slug='default')
+        Backend.objects.exclude(name="default").delete()
+        self.backend = Backend.objects.get(name='default')
         self.embed = Embed.objects.create(
             url="http://www.github.com/",
             backend=self.backend)
@@ -149,7 +149,7 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
 
     def test_choosen_backend_doesnt_auto_assign(self):
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            Backend.objects.create(name='b1', slug='b1', regex='.*', priority=5)
+            Backend.objects.create(name='b1', code_path='b1', regex='.*', priority=5)
 
             data = dict(url='www.fakeurl.com', backend=1)
             r = self.client.post(self.url, data)

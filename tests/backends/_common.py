@@ -3,7 +3,6 @@ from functools import wraps
 from abc import ABCMeta, abstractproperty
 
 from armstrong.apps.embeds.models import Provider, EmbedType
-from armstrong.apps.embeds.backends import get_backend
 
 
 class CommonResponseTestCaseMixin(object):
@@ -127,18 +126,6 @@ class CommonBackendTestCaseMixin(object):
 
     def setUp(self):
         self.backend = self.backend_cls()
-
-    def _get_backend_name(self):
-        name = self.backend_cls.__name__
-        return name[:name.rfind('Backend')]
-
-    def test_can_load_backend(self):
-        b = get_backend(self._get_backend_name())
-        self.assertTrue(isinstance(b, self.backend_cls))
-
-    def test_can_load_backend_by_capitalized_name(self):
-        b = get_backend(self._get_backend_name().title())
-        self.assertTrue(isinstance(b, self.backend_cls))
 
     def test_call_requires_url(self):
         with self.assertRaises(TypeError):

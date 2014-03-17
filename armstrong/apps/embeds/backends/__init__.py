@@ -5,19 +5,22 @@ class InvalidResponseError(Exception):
     pass
 
 
-def get_backend(name):
-    if not name:
+def get_backend(path):
+    if not path:
         raise ImportError
 
-    name = str(name).lower()
-    module = "%s.%s" % (__package__, name)
+    try:
+        module, cls = path.rsplit('.', 1)
+    except ValueError:
+        raise ImportError
+
     try:
         from importlib import import_module
     except ImportError:  # Python 2.6 support # pragma: no cover
-        module = __import__(module, globals(), locals(), [name], 0)
+        module = __import__(module, fromlist=[''])
     else:  # pragma: no cover
         module = import_module(module)
-    return getattr(module, "%sBackend" % name.capitalize())()
+    return getattr(module, cls)()
 
 
 def proxy(view_func=None):

@@ -13,7 +13,7 @@ class EmbedFormTestCase(TestCase):
         self.form = EmbedForm
 
         # Remove everything but the default Backend
-        Backend.objects.exclude(slug="default").delete()
+        Backend.objects.exclude(name="default").delete()
 
     def test_backend_can_be_empty(self):
         f = self.form(data=dict(url='www.url.com'))
@@ -24,11 +24,11 @@ class EmbedFormTestCase(TestCase):
         f.is_valid()  # trigger cleaning
         self.assertEqual(
             f.cleaned_data['backend'],
-            Backend.objects.get(slug='default'))
+            Backend.objects.get(name='default'))
 
     def test_empty_backend_auto_assigns_higher_priority(self):
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            b1 = Backend.objects.create(name='b1', slug='b1', regex='.*', priority=5)
+            b1 = Backend.objects.create(name='b1', code_path='b1', regex='.*', priority=5)
 
             f = self.form(data=dict(url='www.url.com'))
             f.is_valid()  # trigger cleaning
@@ -36,13 +36,13 @@ class EmbedFormTestCase(TestCase):
 
     def test_choosen_backend_doesnt_auto_assign(self):
         with fudge.patched_context(Backend, '__init__', fake_backend_init):
-            Backend.objects.create(name='b1', slug='b1', regex='.*', priority=5)
+            Backend.objects.create(name='b1', code_path='b1', regex='.*', priority=5)
 
             f = self.form(data=dict(url='www.url.com', backend=1))
             f.is_valid()  # trigger cleaning
             self.assertEqual(
                 f.cleaned_data['backend'],
-                Backend.objects.get(slug='default'))
+                Backend.objects.get(name='default'))
 
     def test_invalid_url_causes_backend_field_to_be_excluded(self):
         """

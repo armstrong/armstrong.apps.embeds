@@ -21,10 +21,10 @@ class Backend(models.Model):
 
     """
     name = models.CharField(max_length=50)
-    slug = models.SlugField(
+    code_path = models.CharField(
                 unique=True,
-                max_length=50,
-                help_text="Used to lookup the actual Backend code. Changing this in the database requires changes in the code.")
+                max_length=100,
+                help_text="Full Python path for the actual Backend code.")
     description = models.CharField(max_length=255, null=True, blank=True)
     regex = models.CharField(
                 max_length=100,
@@ -50,7 +50,7 @@ class Backend(models.Model):
 
         # Load the backend code and sanity check
         try:
-            self._backend = get_backend(self.slug)
+            self._backend = get_backend(self.code_path)
         except ImportError as e:
             raise ImproperlyConfigured('Backends must have a code module: %s' % e)
 

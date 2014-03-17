@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'embeds_backend', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=50)),
+            ('code_path', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('regex', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('priority', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=1)),
@@ -64,12 +64,12 @@ class Migration(SchemaMigration):
     models = {
         u'embeds.backend': {
             'Meta': {'object_name': 'Backend'},
+            'code_path': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'priority': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
-            'regex': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'})
+            'regex': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         u'embeds.embed': {
             'Meta': {'object_name': 'Embed'},
