@@ -6,7 +6,7 @@ from .forms import *
 from .mixins import *
 from .templatetags import *
 
-# Silence logging during tests
+# Silence our logging during tests
 from armstrong.apps.embeds import logger
 try:
     from logging import NullHandler
@@ -18,3 +18,4 @@ except ImportError:  # Python 2.6 support # pragma: no cover
             pass
 
 logger.addHandler(NullHandler())
+logger.propagate = False
