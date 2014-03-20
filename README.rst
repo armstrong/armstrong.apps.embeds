@@ -124,14 +124,14 @@ returned. If you want the response object itself, use
 ``embed_obj.get_response()``.
 
 ``embed_obj.response`` is the way to access the response data. This will be a
-subclass of the ``Response`` object with a standard set of attributes.
+subclass of the ``BaseResponse`` object with a standard set of attributes.
 ``is_valid()`` will be False in cases where the API had a problem, didn't
 return data, 404'd, etc. ``is_fresh()`` will be True when the response is
 fresh off the wire. It's used to differentiate from database cached response
 data and you can probably ignore it. ``type`` and ``provider`` are
 ``EmbedType`` and ``Provider`` model objects. ``_data`` holds the actual raw
 response in JSON. The goal is to never directly access this. Instead, the
-Response class is subclassed by each backend/API and tailored to parse the
+BaseResponse class is subclassed by each backend/API and tailored to parse the
 raw data into standardized attributes. This way who cares if it's YouTube or
 Vimeo, access the object the same and share the templates. These attributes
 return an empty string when nothing is available and are therefore

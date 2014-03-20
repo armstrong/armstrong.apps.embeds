@@ -1,7 +1,7 @@
 from ..models import EmbedType, Provider
 
 
-class Response(object):
+class BaseResponse(object):
     _type_field = 'type'
     _provider_field = 'provider_name'
 

@@ -1,5 +1,5 @@
 from . import proxy
-from .base_response import Response
+from .base_response import BaseResponse
 
 
 TWITTER_SCRIPT_TAG = '<blockquote class="twitter-tweet">' \
@@ -8,7 +8,7 @@ TWITTER_SCRIPT_TAG = '<blockquote class="twitter-tweet">' \
     'charset="utf-8"></script>'
 
 
-class TwitterResponse(Response):
+class TwitterResponse(BaseResponse):
     def is_valid(self):
         return True
 

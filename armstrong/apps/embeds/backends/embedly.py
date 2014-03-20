@@ -5,10 +5,10 @@ from httplib2 import ServerNotFoundError
 
 from .. import logger
 from . import proxy, InvalidResponseError
-from .base_response import Response
+from .base_response import BaseResponse
 
 
-class EmbedlyResponse(Response):
+class EmbedlyResponse(BaseResponse):
     def is_valid(self):
         return not (
             not self._data or

@@ -1,8 +1,8 @@
 from . import proxy
-from .base_response import Response
+from .base_response import BaseResponse
 
 
-class DefaultResponse(Response):
+class DefaultResponse(BaseResponse):
     def is_valid(self):
         return True
 

@@ -141,8 +141,8 @@ class Embed(models.Model, TemplatesByEmbedTypeMixin):
         but there is no need to re-write the metadata.
 
         """
-        from .backends.base_response import Response
-        if not isinstance(response, Response):
+        from .backends.base_response import BaseResponse
+        if not isinstance(response, BaseResponse):
             raise InvalidResponseError("not a Response object")
 
         if self.response == response:
