@@ -1,5 +1,9 @@
 armstrong.apps.embeds
 =====================
+
+.. image:: https://travis-ci.org/armstrong/armstrong.apps.embeds.svg?branch=master
+   :target: https://travis-ci.org/armstrong/armstrong.apps.embeds
+
 Armstrong.Apps.Embeds provides a data model and modular backend system to
 extract embeddable content and metadata from external URLs. Representing
 embeddable content in a database brings the typical benefits of relational

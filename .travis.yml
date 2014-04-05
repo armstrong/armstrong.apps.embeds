@@ -4,6 +4,7 @@ python:
   - 2.7
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
+  - if [[ $DJANGO_VERSION < '1.4' ]]; then pip install "django-model-utils<1.4"; fi
   - pip install -r requirements/dev.txt
   - pip install .
   - pip install Django==$DJANGO_VERSION
