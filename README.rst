@@ -7,6 +7,12 @@ armstrong.apps.embeds
 .. image:: https://coveralls.io/repos/armstrong/armstrong.apps.embeds/badge.png
   :target: https://coveralls.io/r/armstrong/armstrong.apps.embeds
   :alt: Coverage status
+.. image:: https://pypip.in/version/armstrong.apps.embeds/badge.png
+  :target: https://pypi.python.org/pypi/armstrong.apps.embeds/
+  :alt: PyPI Version
+.. image:: https://pypip.in/license/armstrong.apps.embeds/badge.png
+  :target: https://pypi.python.org/pypi/armstrong.apps.embeds/
+  :alt: License
 
 Armstrong.Apps.Embeds provides a data model and modular backend system to
 extract embeddable content and metadata from external URLs. Representing
