@@ -1,0 +1,7 @@
+[run]
+source = armstrong.apps.embeds
+omit = */migrations/*
+branch = True
+
+[html]
+directory = coverage

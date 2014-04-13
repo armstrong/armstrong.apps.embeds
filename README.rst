@@ -2,7 +2,11 @@ armstrong.apps.embeds
 =====================
 
 .. image:: https://travis-ci.org/armstrong/armstrong.apps.embeds.svg?branch=master
-   :target: https://travis-ci.org/armstrong/armstrong.apps.embeds
+  :target: https://travis-ci.org/armstrong/armstrong.apps.embeds
+  :alt: TravisCI status
+.. image:: https://coveralls.io/repos/armstrong/armstrong.apps.embeds/badge.png
+  :target: https://coveralls.io/r/armstrong/armstrong.apps.embeds
+  :alt: Coverage status
 
 Armstrong.Apps.Embeds provides a data model and modular backend system to
 extract embeddable content and metadata from external URLs. Representing
