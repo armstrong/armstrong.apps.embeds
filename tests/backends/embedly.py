@@ -74,8 +74,8 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
         provider_name="Flickr",
         description="Roger Fenton 1856 Accession no. PGP 233.2 Medium Salt print from a collodion negative Size 34.00 x 42.80 cm Credit Presented anonymously through the good offices of Christie's 1998 For more information please select here.",
         thumbnail_url="https://farm4.staticflickr.com/3126/3110936222_7374acb6a6_z.jpg?zz=1",
-        thumbnail_height=431,
-        thumbnail_width=500)
+        thumbnail_height=551,
+        thumbnail_width=640)
 
     @fudge.patch('armstrong.apps.embeds.backends.embedly.settings')
     def test_requires_api_key_in_settings(self, fake_settings):
