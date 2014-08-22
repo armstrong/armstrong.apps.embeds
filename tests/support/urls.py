@@ -2,10 +2,11 @@ from django.contrib import admin
 
 try:
     from django.conf.urls import patterns, include
-except ImportError:  # Django 1.3 # pragma: no cover
+except ImportError:  # DROP_WITH_DJANGO13 pragma: no cover
     from django.conf.urls.defaults import patterns, include
 
 
+# DROP_WITH_DJANGO16
 admin.autodiscover()
 
 urlpatterns = patterns('',

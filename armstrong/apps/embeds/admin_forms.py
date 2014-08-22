@@ -7,7 +7,7 @@ from django.contrib.formtools.preview import FormPreview
 
 try:
     from django.utils.encoding import force_text
-except ImportError:  # Django 1.3 # pragma: no cover
+except ImportError:  # DROP_WITH_DJANGO13 # pragma: no cover
     from django.utils.encoding import force_unicode as force_text
 
 from .models import Embed

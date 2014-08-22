@@ -16,7 +16,7 @@ def get_backend(path):
 
     try:
         from importlib import import_module
-    except ImportError:  # Python 2.6 support # pragma: no cover
+    except ImportError:  # PY26 # pragma: no cover
         module = __import__(module, fromlist=[''])
     else:  # pragma: no cover
         module = import_module(module)

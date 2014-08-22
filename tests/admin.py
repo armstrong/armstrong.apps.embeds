@@ -257,7 +257,7 @@ class EmbedAdminAddTestCase(EmbedAdminBaseTestCase, TestCase):
         r = self.client.get(self.url)
         self.assertEqual(r.context['form1_submit_text'], 'Preview')
 
-    @unittest.skipIf(django.VERSION < (1, 4), 'html feature added in Django 1.4')
+    @unittest.skipIf(django.VERSION < (1, 4), 'html feature added in Django 1.4')  # DROP_WITH_DJANGO13
     def test_first_submit_button_html(self):
         r = self.client.get(self.url)
         self.assertContains(
@@ -310,7 +310,7 @@ class EmbedAdminChangeTestCase(EmbedAdminBaseTestCase, TestCase):
             r.context['form1_submit_text'],
             'Request new data & Preview')
 
-    @unittest.skipIf(django.VERSION < (1, 4), 'html feature added in Django 1.4')
+    @unittest.skipIf(django.VERSION < (1, 4), 'html feature added in Django 1.4')  # DROP_WITH_DJANGO13
     def test_first_submit_button_html(self):
         r = self.client.get(self.url)
         self.assertContains(
@@ -376,13 +376,13 @@ class EmbedAdminChangeTestCase(EmbedAdminBaseTestCase, TestCase):
         r = self.client.get(self.url)
         self.assertEqual(r.status_code, 403)
 
-    @unittest.skipIf(django.VERSION >= (1, 5), 'pre-Django 1.5 required a 404.html template')
+    @unittest.skipIf(django.VERSION >= (1, 5), 'pre-Django 1.5 required a 404.html template')  # DROP_WITH_DJANGO14
     def test_invalid_object_id_attempts_404(self):
         from django.template import TemplateDoesNotExist
         with self.assertRaisesRegexp(TemplateDoesNotExist, '404.html'):
             self.client.get(reverse('admin:embeds_embed_change', args=[100]))
 
-    @unittest.skipIf(django.VERSION < (1, 5), 'Django 1.5 has a default 404.html')
+    @unittest.skipIf(django.VERSION < (1, 5), 'Django 1.5 has a default 404.html')  # DROP_WITH_DJANGO14
     def test_invalid_object_id_returns_404(self):
         r = self.client.get(reverse('admin:embeds_embed_change', args=[100]))
         self.assertEqual(r.status_code, 404)
