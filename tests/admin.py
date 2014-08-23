@@ -95,7 +95,6 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
         self.obj_count = Embed.objects.count()
 
         # other shared vars
-        self.add_url = reverse('admin:embeds_embed_add')
         self.changelist_url = reverse('admin:embeds_embed_changelist')
         self.valid_data = dict(url='http://www.fakeurl.com/', backend='')
 
@@ -237,9 +236,9 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
             self.assertContains(r, 'value="Save"')
 
     def test_save_requires_hash(self):
-        submit, r = self._prepare_step2_data(self.add_url, self.valid_data)
+        submit, r = self._prepare_step2_data(self.url, self.valid_data)
         submit[r.context['hash_field']] = "invalid"
-        self.client.post(self.add_url, submit)
+        self.client.post(self.url, submit)
 
         self.assertEqual(Embed.objects.count(), self.obj_count)
 
@@ -259,21 +258,11 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
         self.client.post(self.url, submit)
         self.assertIsNone(cache.get(cache_key))
 
-    def test_save_creates_object(self):
-        submit, _ = self._prepare_step2_data(self.add_url, self.valid_data)
-        r = self.client.post(self.add_url, submit)
-
-        self.assertRedirects(r, self.changelist_url)
-        self.assertEqual(Embed.objects.count(), 2)
-        self.assertEqual(
-            Embed.objects.get(pk=2).url,
-            self.valid_data['url'])
-
 
 class EmbedAdminAddTestCase(EmbedAdminBaseTestCase, TestCase):
     def setUp(self):
         super(EmbedAdminAddTestCase, self).setUp()
-        self.url = self.add_url
+        self.url = reverse('admin:embeds_embed_add')
 
     def test_first_submit_button_text(self):
         r = self.client.get(self.url)
@@ -316,6 +305,16 @@ class EmbedAdminAddTestCase(EmbedAdminBaseTestCase, TestCase):
 
         r = self.client.get(self.url)
         self.assertEqual(r.status_code, 403)
+
+    def test_save_creates_object(self):
+        submit, _ = self._prepare_step2_data(self.url, self.valid_data)
+        r = self.client.post(self.url, submit)
+
+        self.assertRedirects(r, self.changelist_url)
+        self.assertEqual(Embed.objects.count(), 2)
+        self.assertEqual(
+            Embed.objects.get(pk=2).url,
+            self.valid_data['url'])
 
 
 class EmbedAdminChangeTestCase(EmbedAdminBaseTestCase, TestCase):
