@@ -62,7 +62,7 @@ class EmbedAdmin(admin.ModelAdmin):
         except ImportError:  # DROP_WITH_DJANGO13 # pragma: no cover
             from django.conf.urls.defaults import patterns, url
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.object_name.lower()
         my_urls = patterns('',
             url(r'^add/$', EmbedFormPreview(EmbedForm, self), name='%s_%s_add' % info),
             url(r'^(\d+)/$', EmbedFormPreview(EmbedForm, self), name='%s_%s_change' % info),
