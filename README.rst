@@ -70,7 +70,7 @@ Features
 
 Installation & Configuration
 ----------------------------
-Supports Django 1.3, 1.4, 1.5, 1.6 on Python 2.6 and 2.7.
+Supports Django 1.3, 1.4, 1.5, 1.6, 1.7 on Python 2.6 and 2.7.
 (Though if you are using Django 1.3, make sure to use django-model-utils<1.4.)
 
 #. ``pip install armstrong.apps.embeds``
@@ -83,7 +83,11 @@ Supports Django 1.3, 1.4, 1.5, 1.6 on Python 2.6 and 2.7.
 
 #. Add ``armstrong.apps.embeds`` to your ``INSTALLED_APPS``
 
-#. Run either ``syncdb`` or ``migrate`` if you are using `South`_
+#. Install the database schema
+
+   * Django 1.7+ use ``manage.py migrate``
+   * previous Djangos use either ``manage.py syncdb`` or ``manage.py migrate``
+     if you are using `South`_ (in which case use South 1.0+)
 
 #. Load the provided Backends into your database. (This is not provided as
    initial fixture data so that you may edit them without worrying that
