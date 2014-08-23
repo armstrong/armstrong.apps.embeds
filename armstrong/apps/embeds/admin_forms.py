@@ -21,6 +21,9 @@ from .models import Embed
 from .backends import InvalidResponseError
 
 
+IS_POPUP_VAR = "_popup"
+
+
 def generate_cache_key(backend, url):
     cache_key = "armstrong.apps.embeds-response-for-%s-%s" % \
         (backend.pk, slugify(unicode(url)))
@@ -95,7 +98,8 @@ class AdminFormPreview(FormPreview):
             title=_('%s %s') % (self.action.title(), force_text(opts.verbose_name)),
             object_id=self.object_id,
             original=self.object,
-            is_popup="_popup" in request.REQUEST,
+            is_popup=(IS_POPUP_VAR in request.POST or
+                      IS_POPUP_VAR in request.GET),
             current_app=self.admin.admin_site.name,
             show_delete=(self.action == "change"),
             app_label=opts.app_label,
