@@ -33,6 +33,12 @@ class SetResponseFieldMixin(object):
         setattr(cls, name,
                 self.descriptor_class(self, response_attr=self.response_attr))
 
+    def deconstruct(self):  # pragma: no cover
+        name, path, args, kwargs = \
+            super(SetResponseFieldMixin, self).deconstruct()
+        kwargs['response_attr'] = self.response_attr
+        return name, path, args, kwargs
+
 
 class ResetResponseDescriptor(ResetResponseMixin, Creator):
     pass

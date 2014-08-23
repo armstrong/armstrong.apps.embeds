@@ -31,8 +31,8 @@ class Backend(models.Model):
         help_text="Used to match a URL when automatically assigning backends.")
     priority = models.PositiveSmallIntegerField(
         default=1,
-        help_text="""A higher number means higher priority.
-                  Used when automatically assigning a backend.""")
+        help_text=("A higher number means higher priority. "
+                   "Used when automatically assigning a backend."))
 
     def __unicode__(self):
         return u"%s (priority: %i; regex: %s)" \
@@ -116,8 +116,8 @@ class Embed(models.Model, TemplatesByEmbedTypeMixin):
         Backend,
         blank=True,
         response_attr='response',
-        help_text="""The most appropriate Backend will auto-assign if
-                  not explicitly provided""")
+        help_text=("The most appropriate Backend will auto-assign if "
+                   "not explicitly provided"))
 
     # Populated from the actual response
     _response = None
