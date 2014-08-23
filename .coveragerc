@@ -1,6 +1,6 @@
 [run]
 source = armstrong.apps.embeds
-omit = */migrations/*
+omit = */migrations/*, */south_migrations/*
 branch = True
 
 [html]
