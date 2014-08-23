@@ -1,15 +1,17 @@
 from functools import wraps
 
 from django.core.cache import cache
-from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.contrib.formtools.preview import FormPreview
 
 try:
+    from django.db.transaction import atomic
+except ImportError:  # DROP_WITH_DJANGO15 # pragma: no cover
+    from django.db.transaction import commit_on_success as atomic
+try:
     from django.utils.encoding import force_text
 except ImportError:  # DROP_WITH_DJANGO13 # pragma: no cover
     from django.utils.encoding import force_unicode as force_text
-
 try:
     from django.utils.text import slugify
 except ImportError:  # DROP_WITH_DJANGO14 # pragma: no cover
@@ -167,7 +169,7 @@ class AdminFormPreview(FormPreview):
                                              request, f):
                 return self.failed_hash(request)  # Security hash failed
 
-            with transaction.commit_on_success():
+            with atomic():
                 return self.done(request, f.cleaned_data)
         else:
             return self.preview_post(request)
