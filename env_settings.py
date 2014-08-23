@@ -10,8 +10,8 @@ INSTALLED_APPS.extend([
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.messages',
-    'django.contrib.sessions',
-    'django.contrib.formtools'])
+    'django.contrib.sessions'
+])
 
 STATIC_URL = "/static/"
 ROOT_URLCONF = 'tests.support.urls'
