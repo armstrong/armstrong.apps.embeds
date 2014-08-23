@@ -1,6 +1,11 @@
 import fudge
 import django
-from django.utils import unittest
+
+try:
+    import unittest2 as unittest  # PY26, test env will install this
+except ImportError:  # pragma: no cover
+    import unittest
+
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Permission
