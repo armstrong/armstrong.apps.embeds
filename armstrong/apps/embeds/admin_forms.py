@@ -56,7 +56,10 @@ class AdminFormPreview(FormPreview):
 
         # Change View if we've been passed an object_id
         if len(args) >= 1:
-            from django.contrib.admin.util import unquote
+            try:
+                from django.contrib.admin.utils import unquote
+            except ImportError:  # DROP_WITH_DJANGO16 # pragma: no cover
+                from django.contrib.admin.util import unquote
 
             self.object_id = args[0]
             self.action = "change"
