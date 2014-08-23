@@ -49,8 +49,14 @@ class CommonAdminBaseTestCase(object):
     def test_admin_site_requires_login(self):
         self.client.logout()
         r = self.client.get(self.changelist_url)
-        self.assertContains(r, 'Log in')
-        self.assertTemplateUsed(r, 'admin/login.html')
+
+        if django.VERSION >= (1, 7):
+            login_url = reverse('admin:login')
+            redirect_url = '%s?next=%s' % (login_url, self.changelist_url)
+            self.assertRedirects(r, redirect_url)
+        else:  # DROP_WITH_DJANGO16
+            self.assertContains(r, 'Log in')
+            self.assertTemplateUsed(r, 'admin/login.html')
 
     def test_admin_site_requires_permission(self):
         self.user.is_superuser = False
