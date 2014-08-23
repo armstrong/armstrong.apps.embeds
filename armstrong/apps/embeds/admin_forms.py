@@ -10,8 +10,19 @@ try:
 except ImportError:  # DROP_WITH_DJANGO13 # pragma: no cover
     from django.utils.encoding import force_unicode as force_text
 
+try:
+    from django.utils.text import slugify
+except ImportError:  # DROP_WITH_DJANGO14 # pragma: no cover
+    from django.template.defaultfilters import slugify
+
 from .models import Embed
 from .backends import InvalidResponseError
+
+
+def generate_cache_key(backend, url):
+    cache_key = "armstrong.apps.embeds-response-for-%s-%s" % \
+        (backend.pk, slugify(unicode(url)))
+    return cache_key[:250]  # memcached max key length
 
 
 # TODO relocate to a shared location
@@ -170,7 +181,6 @@ class EmbedFormPreview(AdminFormPreview):
     have an idea what they are creating.
 
     """
-    cache_key = "embed-response-for-%s-%s"
     form_template = "embeds/admin/embed_change_form.html"
     preview_template = "embeds/admin/embed_change_form.html"
 
@@ -213,8 +223,10 @@ class EmbedFormPreview(AdminFormPreview):
             form.instance.response = response
 
             # cache the response to prevent another API call on save
-            cache_key = self.cache_key % (form.instance.backend.name, form.instance.url)
-            cache.set(cache_key, form.instance.response_cache, 300)  # cache for 5 minutes
+            # set() overwrites if anything already exists from another attempt
+            cache_key = generate_cache_key(
+                form.instance.backend, form.instance.url)
+            cache.set(cache_key, form.instance.response_cache, 300)
 
         #HACK if the backend was auto-assigned the form field must also be set
         if not form.data['backend']:
@@ -231,8 +243,8 @@ class EmbedFormPreview(AdminFormPreview):
         embed.url = cleaned_data['url']
         embed.backend = cleaned_data['backend']
 
-        # load and use cached response
-        cache_key = self.cache_key % (embed.backend.name, embed.url)
+        # load and use cached response then delete/clean up
+        cache_key = generate_cache_key(embed.backend, embed.url)
         embed.response = embed.backend.wrap_response_data(cache.get(cache_key), fresh=True)
         cache.delete(cache_key)
 

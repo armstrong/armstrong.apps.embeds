@@ -1,11 +1,13 @@
 import fudge
 import django
 from django.utils import unittest
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Permission
 
 from armstrong.apps.embeds.models import Backend, Embed
 from armstrong.apps.embeds.forms import EmbedForm
+from armstrong.apps.embeds.admin_forms import generate_cache_key
 from armstrong.apps.embeds.backends import InvalidResponseError, proxy
 from armstrong.apps.embeds.backends.default import DefaultResponse, DefaultBackend
 from .models import fake_backend_init
@@ -181,6 +183,17 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
         r = self.client.post(self.url, self.valid_data)
         self.assertContains(r, 'Response Data')
 
+    def test_step1_caches_response_data_and_overwrites_possible_existing(self):
+        cache_key = generate_cache_key(self.backend, self.valid_data["url"])
+        dummy_data = ("The key could already exist from a previous attempt. We "
+                      "don't care as long as a successful response overrides.")
+        cache.set(cache_key, dummy_data, 10)
+
+        r = self.client.post(self.url, self.valid_data)
+        self.assertEqual(
+            r.context["form"].instance.response_cache,
+            cache.get(cache_key))
+
     def test_step2_invalid_response_has_response_data(self):
         with fudge.patched_context(DefaultResponse, 'is_valid', return_false):
             r = self.client.post(self.url, self.valid_data)
@@ -236,6 +249,15 @@ class EmbedAdminBaseTestCase(CommonAdminBaseTestCase):
 
         r2 = self.client.post(self.url, submit)
         self._on_step2('assertTrue', r2)
+
+    def test_save_deletes_cached_response_data(self):
+        cache_key = generate_cache_key(self.backend, self.valid_data["url"])
+
+        submit, r = self._prepare_step2_data(self.url, self.valid_data)
+        self.assertIn(cache_key, cache)
+
+        self.client.post(self.url, submit)
+        self.assertIsNone(cache.get(cache_key))
 
     def test_save_creates_object(self):
         submit, _ = self._prepare_step2_data(self.add_url, self.valid_data)
