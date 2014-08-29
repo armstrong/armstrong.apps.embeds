@@ -1,7 +1,9 @@
 from functools import wraps
 
 from django.core.cache import cache
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ValidationError
 from django.contrib.formtools.preview import FormPreview
 
 try:
@@ -193,16 +195,6 @@ class EmbedFormPreview(AdminFormPreview):
     form_template = "embeds/admin/embed_change_form.html"
     preview_template = "embeds/admin/embed_change_form.html"
 
-    def _set_error(self, form, msg):
-        """Insert error messages into the form"""
-
-        from django.utils.safestring import mark_safe
-        from django.forms.forms import NON_FIELD_ERRORS
-
-        if NON_FIELD_ERRORS not in form._errors:  # pragma: no cover
-            form._errors[NON_FIELD_ERRORS] = form.error_class()
-        form._errors[NON_FIELD_ERRORS].append(mark_safe(msg))
-
     def process_preview(self, request, form, context):
         """
         Generate the response (and cache it) or provide error messaging.
@@ -215,9 +207,16 @@ class EmbedFormPreview(AdminFormPreview):
                 # throw an error so we can share the except block logic
                 raise InvalidResponseError(response._data)
         except InvalidResponseError as e:
-            msg = "Invalid response from the Backend API.<br />\
-                Check the URL for typos and/or try a different Backend."
-            self._set_error(form, msg)
+            msg = mark_safe(_(
+                "Invalid response from the Backend API.<br />"
+                "Check the URL for typos and/or try a different Backend."))
+            try:
+                form.add_error(None, ValidationError(msg, code="invalid"))
+            except AttributeError:  # DROP_WITH_DJANGO16 # pragma: no cover
+                from django.forms.forms import NON_FIELD_ERRORS
+                if NON_FIELD_ERRORS not in form._errors:
+                    form._errors[NON_FIELD_ERRORS] = form.error_class()
+                form._errors[NON_FIELD_ERRORS].append(msg)
 
             try:  # handle dict data masquerading as an Exception string
                 from ast import literal_eval
