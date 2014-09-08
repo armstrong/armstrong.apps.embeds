@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-0.9 (unreleased)
+0.9 (2014-09-07)
 ------------------
 
 - Support for Django 1.7

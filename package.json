@@ -1,6 +1,6 @@
 {
     "name": "armstrong.apps.embeds",
-    "version": "0.8",
+    "version": "0.9",
     "description": "Provides a way to store, relate to, extract metadata and embed content from external URLs via a modular backend system",
     "install_requires": [
         "django-extensions>=1.0.3",
