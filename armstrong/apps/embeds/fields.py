@@ -61,7 +61,7 @@ try:
     from south.modelsinspector import add_introspection_rules
 except ImportError:  # pragma: no cover
     pass
-else:
+else:  # pragma: no cover
     add_introspection_rules([
         (
             [EmbedURLField, EmbedForeignKey],

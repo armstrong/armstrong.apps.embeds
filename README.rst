@@ -4,13 +4,13 @@ armstrong.apps.embeds
 .. image:: https://travis-ci.org/armstrong/armstrong.apps.embeds.svg?branch=master
   :target: https://travis-ci.org/armstrong/armstrong.apps.embeds
   :alt: TravisCI status
-.. image:: https://coveralls.io/repos/armstrong/armstrong.apps.embeds/badge.png
+.. image:: https://img.shields.io/coveralls/armstrong/armstrong.apps.embeds.svg
   :target: https://coveralls.io/r/armstrong/armstrong.apps.embeds
   :alt: Coverage status
-.. image:: https://pypip.in/version/armstrong.apps.embeds/badge.png
+.. image:: https://pypip.in/version/armstrong.apps.embeds/badge.svg
   :target: https://pypi.python.org/pypi/armstrong.apps.embeds/
   :alt: PyPI Version
-.. image:: https://pypip.in/license/armstrong.apps.embeds/badge.png
+.. image:: https://pypip.in/license/armstrong.apps.embeds/badge.svg
   :target: https://pypi.python.org/pypi/armstrong.apps.embeds/
   :alt: License
 
