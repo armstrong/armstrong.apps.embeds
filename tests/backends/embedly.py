@@ -121,7 +121,7 @@ class EmbedlyBackendTestCase(CommonBackendTestCaseMixin, TestCase):
             title="The I Files - Investigate Your World",
             author_name="The I Files",
             author_url="http://www.youtube.com/user/theifilestv",
-            html='<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fwww.youtube.com%2Fembed%2F341Z3YW3mO0%3Ffeature%3Doembed&url=http%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D341Z3YW3mO0&image=http%3A%2F%2Fi.ytimg.com%2Fvi%2F341Z3YW3mO0%2Fhqdefault.jpg&key=internal&type=text%2Fhtml&schema=youtube" width="854" height="480" scrolling="no" frameborder="0" allowfullscreen></iframe>')
+            html='<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fwww.youtube.com%2Fembed%2F341Z3YW3mO0%3Ffeature%3Doembed&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D341Z3YW3mO0&image=http%3A%2F%2Fi.ytimg.com%2Fvi%2F341Z3YW3mO0%2Fhqdefault.jpg&key=internal&type=text%2Fhtml&schema=youtube" width="854" height="480" scrolling="no" frameborder="0" allowfullscreen></iframe>')
 
         self._test_response_data(url, data)
         self._test_garbage_data_should_not_match_a_valid_response(url, data)
