@@ -7,10 +7,10 @@ armstrong.apps.embeds
 .. image:: https://img.shields.io/coveralls/armstrong/armstrong.apps.embeds.svg
   :target: https://coveralls.io/r/armstrong/armstrong.apps.embeds
   :alt: Coverage status
-.. image:: https://pypip.in/version/armstrong.apps.embeds/badge.svg
+.. image:: https://img.shields.io/pypi/v/armstrong.apps.embeds.svg
   :target: https://pypi.python.org/pypi/armstrong.apps.embeds/
   :alt: PyPI Version
-.. image:: https://pypip.in/license/armstrong.apps.embeds/badge.svg
+.. image:: https://img.shields.io/pypi/l/armstrong.apps.embeds.svg
   :target: https://pypi.python.org/pypi/armstrong.apps.embeds/
   :alt: License
 
